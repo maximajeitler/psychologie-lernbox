@@ -457,7 +457,7 @@ function lvStatus(l){const r=X[l.key]||{};return r.res}
 function renderFolderTiles(){const el=document.getElementById('folders');if(!el)return;
   const tot=LV.filter(l=>l.m!=='U').length, done=LV.filter(l=>lvStatus(l)==='ok').length,sb=document.getElementById('studbar');
   if(sb)sb.innerHTML=`<span>${done} von ${tot} Lehrveranstaltungen bestanden</span><span class="bar"><i style="width:${Math.round(100*done/tot)}%"></i></span>`;
-  el.innerHTML=FOLDERS.map(f=>{const tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
+  el.innerHTML=FOLDERS.filter(f=>f.id!=='praxis').map(f=>{const tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
     const nx=f.lv.map(l=>({l,d:examOf(l)})).filter(x=>x.d&&daysTo(x.d)>=0).sort((a,b)=>D(a.d)-D(b.d))[0];
     return `<a class="folder" href="fach.html?f=${f.id}" style="--a:${f.a};--h:${f.h}"><span class="fc">${f.lv.length} ${f.lv.length===1?'Lehrveranstaltung':'Lehrveranstaltungen'}</span><span class="fn">${f.n}</span><span class="fx">${tools?`<span class="tl">${tools} Lerntool${tools>1?'s':''}</span>`:'<span>noch kein Lerntool</span>'}${nx?`<span>Prüfung ${dtxt(daysTo(nx.d))}</span>`:''}${ok?`<span>✓ ${ok} bestanden</span>`:''}</span></a>`}).join('');
 }
