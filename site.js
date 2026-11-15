@@ -118,6 +118,8 @@ const fwfPassed=it=>it.g==='ok'||(it.g>=1&&it.g<=4);
 function fwfItems(){return((X.lv_FWF||{}).items)||[]}
 function doneEcts(l){const r=X[l.key]||{};if(l.c==='FWF')return Math.min(l.ec,fwfItems().filter(fwfPassed).reduce((a,it)=>a+(+it.ec||0),0));return r.res==='ok'?ectsOf(l):0}
 const noExam=l=>!!l.nx||l.pm==='I'||l.pm==='TU';
+/* Fächer-Übersicht: nur LVs mit echter Prüfung (= Lerntool sinnvoll); Notenplaner zeigt weiterhin alle */
+const needTool=l=>!!l.url||(!noExam(l)&&l.pm==='P');
 const kindTxt=l=>l.pn||(l.nx?'Keine Prüfung':'');
 const PMLBL={P:'Prüfung',PI:'Prüfungsimmanent + Test',I:'Keine Prüfung',TU:'Tutorium',W:'Je nach Wahl'};
 
@@ -457,9 +459,9 @@ function lvStatus(l){const r=X[l.key]||{};return r.res}
 function renderFolderTiles(){const el=document.getElementById('folders');if(!el)return;
   const tot=LV.filter(l=>l.m!=='U').length, done=LV.filter(l=>lvStatus(l)==='ok').length,sb=document.getElementById('studbar');
   if(sb)sb.innerHTML=`<span>${done} von ${tot} Lehrveranstaltungen bestanden</span><span class="bar"><i style="width:${Math.round(100*done/tot)}%"></i></span>`;
-  el.innerHTML=FOLDERS.filter(f=>f.id!=='praxis').map(f=>{const tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
+  el.innerHTML=FOLDERS.filter(f=>f.lv.some(needTool)).map(f=>{const LVS=f.lv.filter(needTool),tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
     const nx=f.lv.map(l=>({l,d:examOf(l)})).filter(x=>x.d&&daysTo(x.d)>=0).sort((a,b)=>D(a.d)-D(b.d))[0];
-    return `<a class="folder" href="fach.html?f=${f.id}" style="--a:${f.a};--h:${f.h}"><span class="fc">${f.lv.length} ${f.lv.length===1?'Lehrveranstaltung':'Lehrveranstaltungen'}</span><span class="fn">${f.n}</span><span class="fx">${tools?`<span class="tl">${tools} Lerntool${tools>1?'s':''}</span>`:'<span>noch kein Lerntool</span>'}${nx?`<span>Prüfung ${dtxt(daysTo(nx.d))}</span>`:''}${ok?`<span>✓ ${ok} bestanden</span>`:''}</span></a>`}).join('');
+    return `<a class="folder" href="fach.html?f=${f.id}" style="--a:${f.a};--h:${f.h}"><span class="fc">${LVS.length} ${LVS.length===1?'Lehrveranstaltung':'Lehrveranstaltungen'}</span><span class="fn">${f.n}</span><span class="fx">${tools?`<span class="tl">${tools} Lerntool${tools>1?'s':''}</span>`:'<span>noch kein Lerntool</span>'}${nx?`<span>Prüfung ${dtxt(daysTo(nx.d))}</span>`:''}${ok?`<span>✓ ${ok} bestanden</span>`:''}</span></a>`}).join('');
 }
 
 /* ================== Fach-Seite ================== */
@@ -472,8 +474,8 @@ function renderFach(){const head=document.getElementById('fhead');if(!head)retur
   head.style.setProperty('--a',f.a);head.style.setProperty('--h',f.h);document.body.style.setProperty('--a',f.a);document.body.style.setProperty('--h',f.h);
   const tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
   head.innerHTML=`<div class="wrap"><a class="crumb" href="index.html#faecher">← Alle Fächer</a><h1>${f.n}</h1>
-    <div class="stats"><span>${f.lv.length} ${f.lv.length===1?'Lehrveranstaltung':'Lehrveranstaltungen'}</span><span>${tools?tools+' Lerntool'+(tools>1?'s':''):'noch kein Lerntool'}</span>${ok?`<span>✓ ${ok} bestanden</span>`:''}</div></div>`;
-  document.getElementById('lvs').innerHTML=f.lv.map(l=>{const d=examOf(l),r=X[l.key]||{},ts=toolStats(l),dd=d?daysTo(d):null;
+    <div class="stats"><span>${f.lv.filter(needTool).length} ${f.lv.filter(needTool).length===1?'Lehrveranstaltung':'Lehrveranstaltungen'}</span><span>${tools?tools+' Lerntool'+(tools>1?'s':''):'noch kein Lerntool'}</span>${ok?`<span>✓ ${ok} bestanden</span>`:''}</div></div>`;
+  document.getElementById('lvs').innerHTML=f.lv.filter(needTool).map(l=>{const d=examOf(l),r=X[l.key]||{},ts=toolStats(l),dd=d?daysTo(d):null;
     return `<div class="lv${l.url?' has':''}" style="--a:${f.a}"><span class="code">${esc(l.c)} · ${esc(MOD[l.m]||'')}</span><h4>${esc(l.n)}</h4>
      <div class="tags"><span class="chip">${esc(l.t)}</span>${l.pm?`<span class="chip pm-${l.pm}">${PMLBL[l.pm]}</span>`:''}${l.url?'<span class="chip hot">Lerntool</span>':''}${r.res==='ok'?`<span class="chip ok">✓ bestanden${r.grade?' · '+r.grade:''}</span>`:r.res==='no'?'<span class="chip no">nicht bestanden</span>':''}${d?`<span class="chip">📅 ${fmtD(d,{day:'2-digit',month:'2-digit',year:'2-digit'})}${dd>=0?' · '+dtxt(dd):''}</span>`:''}</div>
      <p class="ln">${esc(kindTxt(l))}</p>

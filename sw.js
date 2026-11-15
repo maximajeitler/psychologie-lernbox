@@ -1,5 +1,5 @@
 /* Psychologie Lernbox · Service Worker (offline lernen) */
-const V='2611160031';
+const V='2611160036';
 const CACHE='lernbox-'+V, EXT='lernbox-ext';
 const PRE=["./index.html", "./datenschutz.html", "./einstellungen.html", "./fach.html", "./gruppen.html", "./impressum.html", "./noten.html", "./rangliste.html", "./wrapped.html", "./faecher/entwicklung-1.html", "./faecher/sozial-1.html", "./faecher/taetigkeitsbereiche.html", "./site.css", "./site.js", "./account.js", "./pets.js", "./pdf.js", "./report.js", "./tools.css", "./app.js", "./wlog.js", "./wrapped.js", "./chat.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./favicon-32.png", "./favicon.svg"];
 self.addEventListener('install',e=>{
