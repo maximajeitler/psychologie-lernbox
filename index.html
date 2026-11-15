@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0A1428">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2611151849">
+<link rel="icon" type="image/png" href="favicon-32.png?v=2611151849">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernbox">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Psychologie Lernbox</title>
+<meta name="description" content="Lerntools für das Psychologiestudium an der Uni Graz – Lernzettel, Karteikarten, Quiz, Prüfungssimulation, Prüfungskalender und Lern-Haustier.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="site.css?v=2611151849">
+<script>(function(d){var r=d.documentElement,f=d.fonts,a='600 15px "Instrument Sans"',b='800 18px "Bricolage Grotesque"',k=function(){r.classList.add("fl")};try{if(f&&!(f.check(a)&&f.check(b))){r.classList.add("fw");Promise.all([f.load(a),f.load(b)]).then(k,k);setTimeout(k,1500)}}catch(e){k()}})(document)</script>
+</head>
+<body data-page="start">
+<header class="topbar"><div class="wrap navin"><a class="logo" href="index.html"><img class="lmark" src="icon-192.png" alt="" width="28" height="28">Psychologie<span>Lernbox</span></a><nav class="links" aria-label="Hauptnavigation"><a href="index.html" aria-current="page">Start</a><a href="index.html#pruefungen">Prüfungen</a><a href="index.html#faecher">Fächer</a><a href="noten.html">Noten</a><a href="rangliste.html">Rangliste</a><a href="gruppen.html">Freunde<i class="navb" id="navsoc" hidden></i></a></nav><div class="topr"><a class="gear" href="einstellungen.html" title="Einstellungen" aria-label="Einstellungen">⚙︎</a></div></div></header>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hgrid">
+      <div>
+        <div class="hello" id="hello">Hallo!</div>
+        <h1>Psychologie<br><span>Lernbox</span></h1>
+        <p class="intro">Deine Lernplattform fürs <b>Psychologiestudium an der Uni Graz</b>. Für jede Lehrveranstaltung ein eigenes Lerntool – Lernzettel, Karteikarten, Quiz mit Altfragen und Prüfungssimulation – dazu ein Prüfungskalender, der mitdenkt.</p>
+        <p class="feat"><span>Lernzettel</span> <i>·</i> <span>Karteikarten</span> <i>·</i> <span>Quiz &amp; Altfragen</span><br><span>Prüfungssimulation</span> <i>·</i> <span>Lern-Haustier</span></p>
+      </div>
+      <div class="hcards">
+        <div class="hc" id="wetter"><div class="wx2"><span class="ic">⛅</span><span class="txt"><b>Graz</b><span>Wetter wird geladen …</span></span></div></div>
+        <div class="hnext" id="cdHero"></div>
+        <div class="hc tip"><p class="label">Lerntipp aus der Psychologie</p><p id="tip"></p></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="how"><div class="wrap steps">
+  <div class="step"><i>1</i><div><h3>Fach aussuchen</h3><p>Alle Fächer deines Studiums sind in Ordnern sortiert – bei jeder Lehrveranstaltung siehst du, ob es schon ein Lerntool gibt.</p></div></div>
+  <div class="step"><i>2</i><div><h3>Termine eintragen</h3><p>Trag deine Prüfungstermine ein. Der Kalender sagt dir, wann du mit dem Lernen anfangen solltest.</p></div></div>
+  <div class="step"><i>3</i><div><h3>Anmelden (freiwillig)</h3><p>Mit Account wird dein Fortschritt automatisch gespeichert – auf jedem Gerät. Ohne bleibt alles in diesem Browser.</p></div></div>
+</div></div>
+
+<section id="pruefungen"><div class="wrap">
+  <div class="shead">
+    <div><p class="label">Prüfungskalender</p><h2>Deine Prüfungen</h2><p class="sub">Jede:r schreibt wann anders – trag <b>deine</b> Termine ein. Die Lerntools übernehmen sie automatisch.</p></div>
+    <div class="acts"><button class="btn" data-x="add">＋ Prüfung eintragen</button><button class="btn g" data-x="ics">📅 In meinen Kalender</button></div>
+  </div>
+  <div class="xgrid">
+    <div style="display:grid;gap:12px"><div id="nextx"></div><div id="warns" style="display:grid;gap:8px"></div></div>
+    <div class="side"><div class="months" id="months"></div><div class="legend"><span><i style="background:var(--ink)"></i>Prüfung</span><span><i style="background:color-mix(in srgb,var(--ink) 15%,transparent)"></i>Lernphase</span><span><i style="background-image:repeating-linear-gradient(135deg,var(--hl) 0 2px,transparent 2px 5px)"></i>Uni-frei</span><span><i style="box-shadow:inset 0 0 0 2px #E8A13A"></i>ÖH-Frist</span><span><i style="outline:2px solid var(--ink);outline-offset:-2px"></i>Heute</span></div><p class="ferien" id="ferien"></p></div>
+  </div>
+  <div class="xlist" id="xlist"></div>
+  <details class="done" id="donebox"><summary id="donesum">Erledigt</summary><div class="xlist" id="xdone"></div></details>
+</div></section>
+
+<section id="faecher"><div class="wrap">
+  <div class="shead">
+    <div><p class="label">Bachelor Psychologie · Curriculum 16W</p><h2>Fächer</h2><p class="sub">Jeder Ordner ist ein Fach mit allen Lehrveranstaltungen aus dem Studienplan. Tipp drauf, um Lerntools, Termine und die Fach-Rangliste zu sehen. Freie Wahlfächer sind nicht dabei – die sind bei jeder Person anders.</p></div>
+    <div class="studbar" id="studbar"></div>
+  </div>
+  <div class="folders" id="folders"></div>
+</div></section>
+
+<section id="mehr"><div class="wrap mehr">
+  <div class="teaser"><div><p class="label">Rangliste</p><h3>Wer lernt am meisten?</h3><p>Freiwillig und nur mit Spitznamen. Gezählt werden alle beantworteten Fragen.</p><div class="top3" id="top3"></div></div><a class="tbtn" href="rangliste.html">Zur Rangliste →</a></div>
+  <div class="cards3">
+    <button class="c3" type="button" data-x="feedback"><span class="ic" aria-hidden="true">💬</span><span class="lb">Feedback</span><span class="h">Fehler gefunden oder eine Idee?</span><span class="tx">Die Lösungen sind mit den Unterlagen abgeglichen – trotzdem kann mal was falsch sein. Schreib's hier rein, dann wird es ausgebessert.</span><span class="go">Feedback schreiben <i>→</i></span></button>
+    <a class="c3" href="einstellungen.html"><span class="ic" aria-hidden="true">☁️</span><span class="lb">Speichern</span><span class="h">Dein Fortschritt</span><span class="tx">Ohne Account bleibt alles in diesem Browser. Mit Account wird jede Antwort automatisch gespeichert – am Handy, am Laptop und in der Bib.</span><span class="go">Zu den Einstellungen <i>→</i></span></a>
+    <a class="c3" href="https://online.uni-graz.at/" target="_blank" rel="noopener"><span class="ic" aria-hidden="true">🎓</span><span class="lb">Hinweis</span><span class="h">Keine offizielle Seite</span><span class="tx">Die Lernbox ist ein privates Projekt von Studierenden für Studierende. Maßgeblich sind immer die Unterlagen und Termine der Uni Graz.</span><span class="go">Zu UNIGRAZonline <i>→</i></span></a>
+  </div>
+</div></section>
+
+
+<script src="pets.js?v=2611151849"></script>
+<script src="site.js?v=2611151849"></script>
+<script src="account.js?v=2611151849"></script>
+<script src="app.js?v=2611151849"></script>
+</body>
+</html>

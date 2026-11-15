@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0A1428">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2611151849">
+<link rel="icon" type="image/png" href="favicon-32.png?v=2611151849">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernbox">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Rangliste · Psychologie Lernbox</title>
+<meta name="description" content="Allgemeine Rangliste der Psychologie Lernbox.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="site.css?v=2611151849">
+<script>(function(d){var r=d.documentElement,f=d.fonts,a='600 15px "Instrument Sans"',b='800 18px "Bricolage Grotesque"',k=function(){r.classList.add("fl")};try{if(f&&!(f.check(a)&&f.check(b))){r.classList.add("fw");Promise.all([f.load(a),f.load(b)]).then(k,k);setTimeout(k,1500)}}catch(e){k()}})(document)</script>
+</head>
+<body data-page="rang">
+<header class="topbar"><div class="wrap navin"><a class="logo" href="index.html"><img class="lmark" src="icon-192.png" alt="" width="28" height="28">Psychologie<span>Lernbox</span></a><nav class="links" aria-label="Hauptnavigation"><a href="index.html">Start</a><a href="index.html#pruefungen">Prüfungen</a><a href="index.html#faecher">Fächer</a><a href="noten.html">Noten</a><a href="rangliste.html" aria-current="page">Rangliste</a><a href="gruppen.html">Freunde<i class="navb" id="navsoc" hidden></i></a></nav><div class="topr"><a class="gear" href="einstellungen.html" title="Einstellungen" aria-label="Einstellungen">⚙︎</a></div></div></header>
+<header class="pagehead"><div class="wrap"><a class="crumb" href="index.html">← Start</a><h1>Rangliste</h1><p>Wer lernt am meisten? Gezählt werden alle beantworteten Quizfragen in allen Fächern. Mitmachen ist freiwillig – sichtbar ist nur dein Spitzname.</p></div></header>
+<section style="padding-top:34px;background:var(--s-rank)"><div class="wrap"><a class="panel sgolink" href="gruppen.html" style="margin-bottom:22px;display:flex;gap:14px;align-items:center;text-decoration:none;color:inherit"><span style="font-size:2rem">👯</span><span><b style="font-family:var(--display);font-size:1.2rem">Lerngruppen & Freunde</b><br><small style="color:var(--muted)">Gruppen-Ranglisten, Chats und Freunde findest du jetzt unter „Freunde“ →</small></span></a></div><div class="wrap"><p class="label" style="margin:6px 0 12px">Alle · freiwillig mit Spitznamen</p></div><div class="wrap two-col">
+  <div><div class="board big" id="gboard"><div class="bempty">Wird geladen …</div></div></div>
+  <div class="stack">
+    <div class="panel" id="gme"></div>
+    <div class="panel"><p class="label">Pro Fach</p><h2>Fach-Ranglisten</h2><p style="margin-bottom:12px">Wer in einem Fach am meisten richtig hat, siehst du im jeweiligen Fach-Ordner.</p><div class="mini" id="rfach"></div></div>
+  </div>
+</div></section>
+<script>if(/[?&]gruppe=/.test(location.search))location.replace("gruppen.html"+location.search)</script>
+<script src="pets.js?v=2611151849"></script>
+<script src="site.js?v=2611151849"></script>
+<script src="account.js?v=2611151849"></script>
+<script src="app.js?v=2611151849"></script>
+</body>
+</html>

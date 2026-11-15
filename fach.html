@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0A1428">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2611151849">
+<link rel="icon" type="image/png" href="favicon-32.png?v=2611151849">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernbox">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Fach · Psychologie Lernbox</title>
+<meta name="description" content="Lehrveranstaltungen, Lerntools, Prüfungstermine und Rangliste eines Fachs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="site.css?v=2611151849">
+<script>(function(d){var r=d.documentElement,f=d.fonts,a='600 15px "Instrument Sans"',b='800 18px "Bricolage Grotesque"',k=function(){r.classList.add("fl")};try{if(f&&!(f.check(a)&&f.check(b))){r.classList.add("fw");Promise.all([f.load(a),f.load(b)]).then(k,k);setTimeout(k,1500)}}catch(e){k()}})(document)</script>
+</head>
+<body data-page="fach">
+<header class="topbar"><div class="wrap navin"><a class="logo" href="index.html"><img class="lmark" src="icon-192.png" alt="" width="28" height="28">Psychologie<span>Lernbox</span></a><nav class="links" aria-label="Hauptnavigation"><a href="index.html">Start</a><a href="index.html#pruefungen">Prüfungen</a><a href="index.html#faecher" aria-current="page">Fächer</a><a href="noten.html">Noten</a><a href="rangliste.html">Rangliste</a><a href="gruppen.html">Freunde<i class="navb" id="navsoc" hidden></i></a></nav><div class="topr"><a class="gear" href="einstellungen.html" title="Einstellungen" aria-label="Einstellungen">⚙︎</a></div></div></header>
+<header class="pagehead col" id="fhead"></header>
+<section style="padding-top:34px"><div class="wrap two-col">
+  <div><p class="label" style="margin-bottom:12px">Lehrveranstaltungen</p><div class="lvs" id="lvs"></div></div>
+  <div class="stack">
+    <div class="panel" id="fexams"></div>
+    <div class="panel" id="rangliste"><p class="label">Nur dieses Fach</p><h2>Fach-Rangliste</h2><p style="margin-bottom:12px">Wie viel Prozent der Quizfragen zuletzt richtig waren.</p><div class="rtabs" id="rtabs"></div><div class="board" id="fboard"><div class="bempty">Wird geladen …</div></div><div id="fme" style="margin-top:14px"></div></div>
+  </div>
+</div></section>
+<script src="pets.js?v=2611151849"></script>
+<script src="site.js?v=2611151849"></script>
+<script src="account.js?v=2611151849"></script>
+<script src="app.js?v=2611151849"></script>
+</body>
+</html>

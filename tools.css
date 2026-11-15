@@ -1,0 +1,16 @@
+/* Psychologie Lernbox · Handy-Korrekturen für die Lerntools */
+@media (max-width:760px){
+  .learn{grid-template-columns:minmax(0,1fr)!important}
+  .learn>*,main>*,section>*{min-width:0}
+  #rail{min-width:0;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #rail::-webkit-scrollbar{display:none}
+  header.top{flex-wrap:wrap}
+  header.top .topr{flex-wrap:nowrap;justify-content:flex-start;width:100%;max-width:100%;gap:8px}
+  header.top .topr>*{flex:none}
+  #count{flex:1 1 auto!important;min-width:0;max-width:100%}
+  #count>div{min-width:0}
+  #examline{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  input,select,textarea{font-size:16px!important}
+  table{max-width:100%}
+  li.tbl{overflow-x:auto}
+}

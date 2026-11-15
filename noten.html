@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0A1428">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2611151849">
+<link rel="icon" type="image/png" href="favicon-32.png?v=2611151849">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernbox">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Notenplaner · Psychologie Lernbox</title>
+<meta name="description" content="Noten eintragen, Notenschnitt und ECTS im Blick behalten.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="site.css?v=2611151849">
+<script>(function(d){var r=d.documentElement,f=d.fonts,a='600 15px "Instrument Sans"',b='800 18px "Bricolage Grotesque"',k=function(){r.classList.add("fl")};try{if(f&&!(f.check(a)&&f.check(b))){r.classList.add("fw");Promise.all([f.load(a),f.load(b)]).then(k,k);setTimeout(k,1500)}}catch(e){k()}})(document)</script>
+</head>
+<body data-page="noten">
+<header class="topbar"><div class="wrap navin"><a class="logo" href="index.html"><img class="lmark" src="icon-192.png" alt="" width="28" height="28">Psychologie<span>Lernbox</span></a><nav class="links" aria-label="Hauptnavigation"><a href="index.html">Start</a><a href="index.html#pruefungen">Prüfungen</a><a href="index.html#faecher">Fächer</a><a href="noten.html" aria-current="page">Noten</a><a href="rangliste.html">Rangliste</a><a href="gruppen.html">Freunde<i class="navb" id="navsoc" hidden></i></a></nav><div class="topr"><a class="gear" href="einstellungen.html" title="Einstellungen" aria-label="Einstellungen">⚙︎</a></div></div></header>
+<header class="pagehead"><div class="wrap"><a class="crumb" href="index.html">← Start</a><h1>Notenplaner</h1><p>Trag deine Noten ein und behalte Schnitt und ECTS im Blick. Alles speichert sich automatisch – mit Account auf allen Geräten.</p></div></header>
+<section style="padding-top:34px" id="noten"><div class="wrap stack">
+  <div class="panel weg" id="weg"></div>
+  <div class="nstats" id="nstats"></div>
+  <div class="panel" id="nziel"></div>
+  <div class="shead" style="margin:10px 0 0"><div><p class="label">Alle Lehrveranstaltungen</p><h2 style="font-size:clamp(1.6rem,4vw,2.2rem)">Deine Noten</h2><p class="sub">Note antippen: 1 Sehr gut bis 5 Nicht genügend, „–“ heißt noch offen. ECTS sind optional – wenn du sie bei allen benoteten Fächern einträgst, wird der Schnitt danach gewichtet.</p></div><p class="saved" id="nsave" aria-live="polite"></p></div>
+  <div class="nlist" id="nlist"></div>
+</div></section>
+<script src="pets.js?v=2611151849"></script>
+<script src="site.js?v=2611151849"></script>
+<script src="account.js?v=2611151849"></script>
+<script src="app.js?v=2611151849"></script>
+</body>
+</html>
