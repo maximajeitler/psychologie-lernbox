@@ -117,6 +117,8 @@ function ectsOf(l){const v=+((X[l.key]||{}).ects);return v>0?v:(l.ec||0)}
 const fwfPassed=it=>it.g==='ok'||(it.g>=1&&it.g<=4);
 function fwfItems(){return((X.lv_FWF||{}).items)||[]}
 function doneEcts(l){const r=X[l.key]||{};if(l.c==='FWF')return Math.min(l.ec,fwfItems().filter(fwfPassed).reduce((a,it)=>a+(+it.ec||0),0));return r.res==='ok'?ectsOf(l):0}
+/* bestanden? Freie Wahlfächer zählen als bestanden, sobald die bestandenen Kurse die nötigen ECTS erreichen */
+function lvPassed(l){if(l.c==='FWF')return doneEcts(l)>=(l.ec||15);return (X[l.key]||{}).res==='ok'}
 const noExam=l=>!!l.nx||l.pm==='I'||l.pm==='TU';
 /* Fächer-Übersicht: nur LVs mit echter Prüfung (= Lerntool sinnvoll); Notenplaner zeigt weiterhin alle */
 const needTool=l=>!!l.url||(!noExam(l)&&l.pm==='P');
@@ -457,7 +459,7 @@ function renderWeg(){const el=document.getElementById('weg');if(!el)return;const
 /* ================== Fächer-Kacheln (Startseite) ================== */
 function lvStatus(l){const r=X[l.key]||{};return r.res}
 function renderFolderTiles(){const el=document.getElementById('folders');if(!el)return;
-  const tot=LV.filter(l=>l.m!=='U').length, done=LV.filter(l=>lvStatus(l)==='ok').length,sb=document.getElementById('studbar');
+  const tot=LV.filter(l=>l.m!=='U').length, done=LV.filter(l=>l.m!=='U'&&lvPassed(l)).length,sb=document.getElementById('studbar');
   if(sb)sb.innerHTML=`<span>${done} von ${tot} Lehrveranstaltungen bestanden</span><span class="bar"><i style="width:${Math.round(100*done/tot)}%"></i></span>`;
   el.innerHTML=FOLDERS.filter(f=>f.lv.some(needTool)).map(f=>{const LVS=f.lv.filter(needTool),tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
     const nx=f.lv.map(l=>({l,d:examOf(l)})).filter(x=>x.d&&daysTo(x.d)>=0).sort((a,b)=>D(a.d)-D(b.d))[0];
@@ -634,7 +636,7 @@ const GTXT={1:'Sehr gut',2:'Gut',3:'Befriedigend',4:'Genügend',5:'Nicht genüge
 function setGrade(l,g){const r={...(X[l.key]||{})};if(g==null){delete r.grade;delete r.res}else if(g==='ok'){delete r.grade;r.res='ok'}else{r.grade=g;r.res=g===5?'no':'ok'}r.t=Date.now();X[l.key]=r;saveX()}
 function notenStats(){const gr=LV.filter(l=>!l.nx&&l.pm!=='TU');
   const done=gr.filter(l=>(X[l.key]||{}).grade>=1&&(X[l.key]||{}).grade<=4);
-  const passedAll=LV.filter(l=>l.m!=='U'&&(X[l.key]||{}).res==='ok').length;
+  const passedAll=LV.filter(l=>l.m!=='U'&&lvPassed(l)).length;
   const useE=done.length&&done.every(l=>ectsOf(l)>0);
   const fg=fwfItems().filter(it=>it.g>=1&&it.g<=4&&+it.ec>0);
   const sumW=done.reduce((a,l)=>a+(useE?ectsOf(l):1),0)+fg.reduce((a,it)=>a+(useE?+it.ec:1),0),sumG=done.reduce((a,l)=>a+X[l.key].grade*(useE?ectsOf(l):1),0)+fg.reduce((a,it)=>a+it.g*(useE?+it.ec:1),0);
