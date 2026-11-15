@@ -4,6 +4,13 @@ const SB_URL='https://alvzppygynfntlkvlavn.supabase.co', SB_KEY='sb_publishable_
 const TOOLS={ep1:'Entwicklungspsychologie I',soz1:'Sozialpsychologie I',tb30:'Tätigkeitsbereiche'};
 const inTool=typeof CFG!=='undefined'&&typeof bkDump==='function';
 let sb=null, user=null, profile=null, pushT=null, pulling=false;
+/* Gespeicherte Anmeldung sofort lesen, damit beim Laden nicht kurz „Anmelden“ aufblitzt (wird nach der Prüfung bestätigt oder verworfen) */
+let authDone=false, pend=null, profC=null;
+try{const s=JSON.parse(localStorage.getItem('lernbox-auth')||'null');if(s&&s.user&&s.refresh_token)pend=s.user}catch(e){}
+try{profC=JSON.parse(localStorage.getItem('lernbox.profile')||'null')}catch(e){}
+if(pend&&profC&&profC.id!==pend.id)profC=null;
+const curU=()=>user||(authDone?null:pend), curP=()=>profile||(!user&&curU()?profC:null);
+function profSave(){try{if(user&&profile)localStorage.setItem('lernbox.profile',JSON.stringify({id:user.id,nickname:profile.nickname||null,avatar:profile.avatar||null,show_on_board:!!profile.show_on_board,show_general:!!profile.show_general}));else localStorage.removeItem('lernbox.profile')}catch(e){}}
 const $=s=>document.querySelector(s);
 /* ---------- Profilbild (Lern-Tier) ---------- */
 const AV_MOODS=[['content','Ruhig'],['yay','Fröhlich'],['oops','Hoppla']];
@@ -55,7 +62,8 @@ const st=document.createElement('style');st.textContent=css;document.head.append
 const btn=document.createElement('button');btn.className='acbtn';btn.id='acbtn';btn.innerHTML='<span class="ic" aria-hidden="true">👤</span><span class="dot"></span><span class="t">Anmelden</span>';btn.setAttribute('aria-label','Account');btn.onclick=()=>openModal();
 const slot=document.querySelector('.topr')||document.querySelector('header.top');
 if(slot){if(slot.classList.contains('topr'))slot.prepend(btn);else slot.appendChild(btn)}
-function setBtn(){document.documentElement.classList.toggle('lb-auth',!!user);const av=user&&profile&&profile.avatar?avatarHTML(profile.avatar,32):'';btn.classList.toggle('hasav',!!av);const oa=btn.querySelector('.av');if(oa)oa.remove();if(av)btn.insertAdjacentHTML('afterbegin',av);btn.classList.toggle('on',!!user);btn.querySelector('.t').textContent=user?(profile&&profile.nickname?profile.nickname:'Mein Account'):'Anmelden';btn.title=user?'Angemeldet – Fortschritt wird automatisch gespeichert':'Anmelden, damit dein Fortschritt automatisch gespeichert wird'}
+setBtn();
+function setBtn(){const user=curU(),profile=curP();if(authDone)profSave();document.documentElement.classList.toggle('lb-auth',!!user);const av=user&&profile&&profile.avatar?avatarHTML(profile.avatar,32):'';btn.classList.toggle('hasav',!!av);const oa=btn.querySelector('.av');if(oa)oa.remove();if(av)btn.insertAdjacentHTML('afterbegin',av);btn.classList.toggle('on',!!user);btn.querySelector('.t').textContent=user?(profile&&profile.nickname?profile.nickname:'Mein Account'):'Anmelden';btn.title=user?'Angemeldet – Fortschritt wird automatisch gespeichert':'Anmelden, damit dein Fortschritt automatisch gespeichert wird'}
 let mode='login', msg='';
 function close(){document.querySelector('.acbg')?.remove();document.querySelector('.acm')?.remove()}
 function openModal(){close();const bg=document.createElement('div');bg.className='acbg';bg.onclick=close;document.body.appendChild(bg);const m=document.createElement('div');m.className='acm';document.body.appendChild(m);render()}
@@ -139,13 +147,16 @@ async function afterLogin(){const la=avLocal();if(profile&&!profile.avatar&&la&&
 /* ---------- Leaderboard (Startseite) ---------- */
 window.lbFetchGeneral=async()=>{if(!sb)return null;const {data,error}=await sb.rpc('leaderboard_general');return error?null:data};
 window.lbFetch=async tool=>{if(!sb)return null;const {data,error}=await sb.rpc('leaderboard',{p_tool:tool});return error?null:data};
-window.acState=()=>({user,profile,ready:!!sb});
+window.acState=()=>({user:curU(),profile:curP(),ready:!!sb&&authDone,pending:!authDone&&!user&&!!pend});
+/* Seiten gleich im angemeldeten Zustand zeichnen (nicht erst nach der Server-Prüfung) */
+if(pend){try{if(window.lbRender)window.lbRender();if(window.socTick)window.socTick()}catch(e){}}
 window.acOpen=openModal;
 
 /* ---------- Start ---------- */
 const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
 s.onload=async()=>{sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'lernbox-auth'}});
-  const {data}=await sb.auth.getSession();if(data.session){user=data.session.user;await ensureProfile('');await afterLogin()}else setBtn();
+  try{const {data}=await sb.auth.getSession();if(data.session){user=data.session.user;await ensureProfile('');await afterLogin()}}catch(e){}
+  authDone=true;setBtn();
   sb.auth.onAuthStateChange((ev,ses)=>{if(ev==='PASSWORD_RECOVERY'){const pw=prompt('Neues Passwort (mind. 8 Zeichen):');if(pw&&pw.length>=8)sb.auth.updateUser({password:pw})}});
   if($('.acm'))render();if(window.lbRender)window.lbRender()};
 document.head.appendChild(s);

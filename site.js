@@ -847,6 +847,7 @@ async function socInvites(){const p=new URLSearchParams(location.search),fc=p.ge
   if(gc){const r=await rpc('join_group',{p_code:gc});if(!r.error){SOC.sel={gid:r.data[0].id,chat:'g:'+r.data[0].id};toast('🎉 Willkommen in der Gruppe!')}}
   socRender()}
 let socLastUid='-';
+window.socTick=socTick;
 function socTick(){const st=window.acState?window.acState():{};const uid=(st.user&&st.user.id||'')+'|'+(st.ready?1:0);
   if(st.ready&&!st.user)socForget();
   if(uid!==socLastUid){socLastUid=uid;if(document.getElementById('socside')){socRender().then(socInvites)}else if(st.user){socLoad().then(navBadge)}}}
