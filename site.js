@@ -747,16 +747,27 @@ const refLink=r=>{const l=LV.find(x=>x.key===r.tool);if(!l||!l.url)return null;r
 const refCard=(r,mid)=>{if(!r)return'';if(r.o||r.b){const l=LV.find(x=>x.key===r.tool);return `<button class="sref" data-s="openref" data-i="${mid}"><span>${r.type==='q'?'❓ Quizfrage':'📄 Lernzettel'} · ${esc(l?l.n:r.tool)} · antippen zum Ansehen</span><b>${esc(String(r.text||'').slice(0,180))}</b></button>`}const href=refLink(r),l=LV.find(x=>x.key===r.tool);return `<a class="sref" ${href?`href="${href}"`:''}><span>${r.type==='q'?'❓ Quizfrage':'📄 Lernzettel'} · ${esc(l?l.n:r.tool)}</span><b>${esc(String(r.text||'').slice(0,180))}</b></a>`};
 async function socLoad(){const st=window.acState?window.acState():{};if(!st.user)return false;
   const [f,g,u,c]=await Promise.all([rpc('my_friends'),rpc('my_groups'),rpc('group_unread'),SOC.code?Promise.resolve({data:SOC.code}):rpc('my_friend_code')]);
-  SOC.friends=f.data||[];SOC.groups=g.data||[];SOC.gun=Object.fromEntries((u.data||[]).map(x=>[x.group_id,x.unread]));if(c.data)SOC.code=c.data;return true}
+  if(f.error&&g.error)return false;
+  SOC.friends=f.data||[];SOC.groups=g.data||[];SOC.gun=Object.fromEntries((u.data||[]).map(x=>[x.group_id,x.unread]));if(c.data)SOC.code=c.data;socSave(st.user.id);return true}
+/* Zwischenspeicher im Browser: Liste sofort zeigen, im Hintergrund aktualisieren */
+const SOCK='lernbox.soc';
+function socSave(uid){try{localStorage.setItem(SOCK,JSON.stringify({uid,friends:SOC.friends,groups:SOC.groups,gun:SOC.gun,code:SOC.code}))}catch(e){}}
+function socCached(uid){try{const c=JSON.parse(localStorage.getItem(SOCK)||'null');if(!c||(uid&&c.uid!==uid))return false;SOC.friends=c.friends||[];SOC.groups=c.groups||[];SOC.gun=c.gun||{};SOC.code=c.code||'';return true}catch(e){return false}}
+function socForget(){try{localStorage.removeItem(SOCK)}catch(e){}}
 function socUnreadTotal(){return SOC.friends.filter(f=>f.status==='accepted').reduce((a,f)=>a+(f.unread||0),0)+Object.values(SOC.gun).reduce((a,b)=>a+b,0)+SOC.friends.filter(f=>f.incoming).length}
 function navBadge(){const b=document.getElementById('navsoc');if(!b)return;const n=socUnreadTotal();b.textContent=n>9?'9+':n;b.hidden=!n}
 window.socOpenChat=chat=>{if(chat.startsWith('g:'))SOC.sel={gid:chat.slice(2),chat};else{const f=SOC.friends.find(x=>x.chat===chat);if(!f)return;SOC.sel={fid:f.id,chat}}SOC.tab='chat';SOC.reply=null;socRender()};
 const muted=c=>!!((SET.mute||{})[c]);
 async function socRender(noMain){const side=document.getElementById('socside'),main=document.getElementById('socmain');if(!side)return;
   const st=window.acState?window.acState():{};
-  if(!st.ready){side.innerHTML='<p class="sm">Wird geladen …</p>';return}
-  if(!st.user){side.innerHTML='';main.innerHTML=`<div class="sempty"><div class="sbig">👯</div><h2>Lernt gemeinsam</h2><p>Vernetz dich mit deinen Freund:innen, schreib ihnen direkt aus dem Lerntool und macht Lerngruppen mit eigenem Chat und Rangliste.</p><button class="btn" data-x="login">Anmelden, um mitzumachen</button></div>`;return}
-  await socLoad();navBadge();
+  if(!st.ready){if(!side.dataset.drawn&&socCached()){socDraw(noMain);navBadge()}else if(!side.dataset.drawn)side.innerHTML='<p class="sm">Wird geladen …</p>';return}
+  if(!st.user){socForget();delete side.dataset.drawn;side.innerHTML='';main.innerHTML=`<div class="sempty"><div class="sbig">👯</div><h2>Lernt gemeinsam</h2><p>Vernetz dich mit deinen Freund:innen, schreib ihnen direkt aus dem Lerntool und macht Lerngruppen mit eigenem Chat und Rangliste.</p><button class="btn" data-x="login">Anmelden, um mitzumachen</button></div>`;return}
+  let fromCache=false;
+  if(!side.dataset.drawn&&socCached(st.user.id)){socDraw(noMain);navBadge();fromCache=true}
+  const ok=await socLoad();navBadge();
+  if(!ok&&side.dataset.drawn)return;
+  socDraw(noMain||fromCache)}
+function socDraw(noMain){const side=document.getElementById('socside');if(!side)return;side.dataset.drawn=1;
   const inc=SOC.friends.filter(f=>f.incoming),out=SOC.friends.filter(f=>f.status==='pending'&&!f.incoming),fr=SOC.friends.filter(f=>f.status==='accepted'),bl=SOC.friends.filter(f=>f.status==='blocked');
   const link=location.origin+location.pathname.replace(/[^/]*$/,'')+'gruppen.html?freund='+SOC.code;
   side.innerHTML=`<div class="sbox"><p class="label">Dein Freundescode</p><div class="scode"><b>${esc(SOC.code)}</b><button class="ib" data-s="copyf" data-l="${esc(link)}">🔗 Link kopieren</button></div>
@@ -837,7 +848,8 @@ async function socInvites(){const p=new URLSearchParams(location.search),fc=p.ge
   socRender()}
 let socLastUid='-';
 function socTick(){const st=window.acState?window.acState():{};const uid=(st.user&&st.user.id||'')+'|'+(st.ready?1:0);
+  if(st.ready&&!st.user)socForget();
   if(uid!==socLastUid){socLastUid=uid;if(document.getElementById('socside')){socRender().then(socInvites)}else if(st.user){socLoad().then(navBadge)}}}
 setInterval(()=>{socTick();if(document.hidden)return;if(document.getElementById('socside')&&SOC.sel)socPull();},6000);
 setInterval(()=>{if(document.hidden)return;const st=window.acState?window.acState():{};if(st.user){const sd=document.getElementById('socside');if(sd){if(!sd.contains(document.activeElement))socRender(true)}else socLoad().then(navBadge)}},45000);
-setTimeout(socTick,1200);
+socCached()&&navBadge();socTick();{let n=0;const iv=setInterval(()=>{socTick();if(++n>60)clearInterval(iv)},250)}
