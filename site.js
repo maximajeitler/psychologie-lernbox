@@ -23,11 +23,11 @@ const FOLDERS=[
    {c:'E.2.b',n:'Sozialwissenschaftliche Methoden',t:'VU',m:'E2'},
    {c:'H.a',n:'Seminar Forschungsmethodik in einem Grundlagen- oder Anwendungsfach',t:'SE',m:'H'},
    {c:'H.b',n:'Tutorium zum Seminar Forschungsmethodik',t:'TU',m:'H'}]},
- {id:'biologisch',n:'Biologische Psychologie',a:'#A3285F',h:'#A6EDCF',lv:[
+ {id:'biologisch',n:'Biologische Psychologie',a:'#1F6B3A',h:'#FFC9A0',lv:[
    {c:'A.1.d',n:'Biologische Psychologie I',t:'VO',m:'A1',key:'bio'},
    {c:'D.1.b',n:'Biologische Psychologie II',t:'VO',m:'D1'},
    {c:'D.2.b',n:'Spezielle Kapitel der Biologischen Psychologie',t:'VO/SE',m:'D2'}]},
- {id:'allgemein',n:'Allgemeine Psychologie',a:'#8A5A00',h:'#D9CEFF',lv:[
+ {id:'allgemein',n:'Allgemeine Psychologie',a:'#A3123A',h:'#FFE45C',lv:[
    {c:'A.1.c',n:'Allgemeine Psychologie I',t:'VO',m:'A1',key:'allg'},
    {c:'D.1.a',n:'Allgemeine Psychologie II',t:'VO',m:'D1'},
    {c:'D.1.c',n:'Demonstrationen und Übungen zur Allgemeinen Psychologie',t:'VU',m:'D1'},
@@ -47,14 +47,14 @@ const FOLDERS=[
    {c:'C.c',n:'Psychologische Diagnostik II',t:'VO',m:'C'},
    {c:'C.d',n:'Übungen zur Psychologischen Diagnostik',t:'UE',m:'C'},
    {c:'F.3.c',n:'Spezielle Kapitel der Psychologischen Diagnostik',t:'VU/UE',m:'F3'}]},
- {id:'klinisch',n:'Klinische, Gesundheits- & Neuro­psychologie',a:'#9A1FA6',h:'#F4EE7A',lv:[
+ {id:'klinisch',n:'Klinische, Gesundheits- & Neuro­psychologie',a:'#00796B',h:'#FFC2DD',lv:[
    {c:'F.1.a',n:'Klinische Psychologie',t:'VO',m:'F1'},
    {c:'F.1.b',n:'Gesundheitspsychologie',t:'VO',m:'F1'},
    {c:'F.1.c',n:'Neuropsychologie',t:'VO',m:'F1'},
    {c:'F.4.a',n:'Spezielle Kapitel der Neuropsychologie',t:'VO/SE/UE',m:'F4'},
    {c:'F.4.b',n:'Spezielle Kapitel der Klinischen Psychologie',t:'VO/SE/UE',m:'F4'},
    {c:'F.4.c',n:'Spezielle Kapitel der Gesundheitspsychologie',t:'VO/SE/UE',m:'F4'}]},
- {id:'arbeit',n:'Arbeits-, Organisations- & Umwelt­psychologie',a:'#8A3E5C',h:'#C9E9C4',lv:[
+ {id:'arbeit',n:'Arbeits-, Organisations- & Umwelt­psychologie',a:'#526812',h:'#DCCBFF',lv:[
    {c:'F.2.b',n:'Arbeits-, Organisations- und Umweltpsychologie',t:'VO',m:'F2'},
    {c:'F.3.a',n:'Spezielle Kapitel der Arbeits-, Organisations- und Umweltpsychologie',t:'VO/SE/UE',m:'F3'}]},
  {id:'paedagogisch',n:'Pädagogische Psychologie',a:'#1F3366',h:'#FFD54A',lv:[
@@ -282,10 +282,13 @@ function renderExams(){if(!document.getElementById('xlist')){renderHeroNext();re
       <div class="nm">${l.url?`<a href="${l.url}">${esc(l.n)}</a>`:`<span class="t">${esc(l.n)}</span>`}${r.time?` <span class="chip">${esc(r.time)} Uhr</span>`:''}<div class="tags">${tags.join('')}</div></div><div class="r">${right}</div></div>`};
   let html='',lastM='';up.forEach(x=>{const m=fmtD(x.d,{month:'long',year:'numeric'});if(m!==lastM){html+=`<p class="mhead">${m}</p>`;lastM=m}html+=row(x)});
   document.getElementById('xlist').innerHTML=html||'';
-  const db=document.getElementById('donebox');db.hidden=!past.length;
+  const fE=n=>String(Math.round(n*10)/10).replace('.',','),fl=LV.find(l=>l.c==='FWF'),fwfDone=fl&&lvPassed(fl)?fwfItems().filter(fwfPassed):null;
+  const fwfRow=fwfDone?`<div class="xrow" style="--a:${fl.f.a}"><div class="dt"><b>✓</b><small>FWF</small></div><div class="nm"><span class="t">Freie Wahlfächer</span><div class="tags"><span class="chip ok">✓ ${fE(doneEcts(fl))} ECTS geschafft</span>${fwfDone.map(it=>`<span class="chip">${esc(it.n||'Kurs')}${it.ec?' · '+fE(+it.ec)+' ECTS':''}</span>`).join('')}</div></div><div class="r"><a class="ib" href="noten.html">✎</a></div></div>`:'';
+  const nDone=past.length+(fwfDone?1:0);
+  const db=document.getElementById('donebox');db.hidden=!nDone;
   const grades=past.filter(x=>x.r.res==='ok'&&x.r.grade).map(x=>x.r.grade);
-  document.getElementById('donesum').innerHTML=`Erledigt (${past.length})${grades.length?` <span class="avg">· Notenschnitt ${(grades.reduce((a,b)=>a+b,0)/grades.length).toFixed(2).replace('.',',')}</span>`:''}`;
-  document.getElementById('xdone').innerHTML=past.slice().reverse().map(row).join('');
+  document.getElementById('donesum').innerHTML=`Erledigt (${nDone})${grades.length?` <span class="avg">· Notenschnitt ${(grades.reduce((a,b)=>a+b,0)/grades.length).toFixed(2).replace('.',',')}</span>`:''}`;
+  document.getElementById('xdone').innerHTML=past.slice().reverse().map(row).join('')+fwfRow;
   /* Monate */
   const months=[];for(let i=0;i<4;i++)months.push(new Date(today.getFullYear(),today.getMonth()+i,1));
   document.getElementById('months').innerHTML=months.map(m=>{const y=m.getFullYear(),mo=m.getMonth(),first=(new Date(y,mo,1).getDay()+6)%7,len=new Date(y,mo+1,0).getDate();let cells='';for(let i=0;i<first;i++)cells+='<span></span>';
