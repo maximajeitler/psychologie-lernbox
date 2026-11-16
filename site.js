@@ -824,8 +824,15 @@ async function socSend(){const ta=document.getElementById('stxt');if(!ta)return;
   if(window.lbNameOk&&!window.lbNameOk(t)){toast('Bitte ohne Kraftausdrücke 🙂');return}
   ta.disabled=true;const r=await rpc('send_msg',{p_chat:SOC.sel.chat,p_body:t,p_ref:null,p_reply:SOC.reply});ta.disabled=false;
   if(r.error){toast(/slow/.test(r.error)?'Langsam – kurz durchatmen 🙂':r.error);return}ta.value='';ta.style.height='';SOC.reply=null;const q=document.querySelector('.sreply');if(q)q.remove();ta.focus();socPull(true)}
-async function groupRang(gid){const r=await rpc('group_board',{p_group:gid,p_tool:null});const el=document.getElementById('srang');if(!el)return;const d=r.data||[];
-  el.innerHTML=d.length?`<ol class="srank">${d.map((x,i)=>`<li class="${x.is_me?'me':''}"><span class="spos">${['🥇','🥈','🥉'][i]||i+1}</span>${avHTML(x.avatar)}<span class="sn">${esc(x.nickname)}${x.is_me?' (du)':''}</span><b>${fmt0(x.answered)}</b><small>Fragen</small></li>`).join('')}</ol>`:'<p class="sm">Noch keine Daten.</p>'}
+const GTOOLS=()=>LV.filter(l=>l.key&&l.url).map(l=>({k:l.key,n:l.n,a:l.f.a}));
+async function groupRang(gid){const el=document.getElementById('srang');if(!el)return;
+  const hid=(SET.grHide||[]),tools=GTOOLS(),vis=tools.filter(t=>!hid.includes(t.k));if(SOC.gtool&&!vis.some(t=>t.k===SOC.gtool))SOC.gtool=null;
+  const chips=`<div class="grchips"><button data-s="gtool" data-k="" aria-pressed="${!SOC.gtool}">🏆 Allgemein</button>${vis.map(t=>`<span class="grchip" style="--a:${t.a}"><button data-s="gtool" data-k="${t.k}" aria-pressed="${SOC.gtool===t.k}">${esc(t.n)}</button><button class="grx" data-s="ghide" data-k="${t.k}" title="Fach ausblenden (z. B. Prüfung schon geschafft)" aria-label="${esc(t.n)} ausblenden">✕</button></span>`).join('')}${hid.length?`<button class="grmore" data-s="gunhide">${hid.length} ausgeblendet · wieder zeigen</button>`:''}</div>`;
+  el.innerHTML=chips+'<p class="sm">Wird geladen …</p>';
+  const r=await rpc('group_board',{p_group:gid,p_tool:SOC.gtool||null});if(!document.getElementById('srang'))return;const d=r.data||[],me=d.find(x=>x.is_me),per=!!SOC.gtool;
+  const list=d.length?`<ol class="srank">${d.map((x,i)=>`<li class="${x.is_me?'me':''}${x.hidden?' hid':''}"><span class="spos">${['🥇','🥈','🥉'][i]||i+1}</span>${avHTML(x.avatar)}<span class="sn">${esc(x.nickname)}${x.is_me?' (du)':''}${x.hidden?'<small>nur für dich sichtbar</small>':''}</span>${per?`<b>${x.score} %</b><small>${fmt0(x.answered)} Fragen</small>`:`<b>${fmt0(x.answered)}</b><small>Fragen</small>`}</li>`).join('')}</ol>`:'<p class="sm">In diesem Fach lernt noch niemand aus der Gruppe.</p>';
+  const tog=`<label class="grtog"><input type="checkbox" data-s="ghideme" ${me&&me.hidden?'':'checked'}> Mich in dieser Gruppen-Rangliste zeigen</label>`;
+  el.innerHTML=chips+(per?'<p class="sm">Pro Fach: wie viel Prozent der Fragen jemand zuletzt richtig hatte.</p>':'<p class="sm">Alle beantworteten Fragen in allen Fächern.</p>')+list+tog}
 const fmt0=n=>Number(n||0).toLocaleString('de-AT');
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-s]');if(!b||!document.getElementById('socside'))return;const a=b.dataset.s,id=b.dataset.i;
   const fm=t=>{const x=document.getElementById('sfmsg');if(x)x.textContent=t},gm=t=>{const x=document.getElementById('sgmsg');if(x)x.textContent=t};
@@ -843,6 +850,10 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-s]')
   if(a==='leaveg'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Wirklich verlassen?';return}await rpc('leave_group',{p_group:SOC.sel.gid});SOC.sel=null;socRender();return}
   if(a==='gicon'){const p=document.getElementById('gpick');if(p)p.hidden=!p.hidden;return}
   if(a==='gset'){const e2=b.dataset.e,gid=SOC.sel&&SOC.sel.gid;if(!gid)return;const r=await rpc('set_group_icon',{p_group:gid,p_icon:e2});if(r.error){toast('Hat nicht geklappt – probier es nochmal.');return}const gg=SOC.groups.find(x=>x.id===gid);if(gg)gg.icon=e2;socDraw();toast(e2+' Neues Gruppenbild!');return}
+  if(a==='gtool'){SOC.gtool=b.dataset.k||null;groupRang(SOC.sel.gid);return}
+  if(a==='ghide'){SET.grHide=[...new Set([...(SET.grHide||[]),b.dataset.k])];saveSet();if(SOC.gtool===b.dataset.k)SOC.gtool=null;groupRang(SOC.sel.gid);return}
+  if(a==='gunhide'){SET.grHide=[];saveSet();groupRang(SOC.sel.gid);return}
+  if(a==='ghideme'){const r=await rpc('set_group_rank_hidden',{p_group:SOC.sel.gid,p_hide:!b.checked});if(r.error){toast('Hat nicht geklappt – probier es nochmal.');b.checked=!b.checked;return}toast(b.checked?'Du bist wieder in der Rangliste.':'Du bist jetzt für die anderen versteckt.');groupRang(SOC.sel.gid);return}
   if(a==='send'){socSend();return}
   if(a==='mute'){SET.mute=Object.assign({},SET.mute||{});if(SET.mute[SOC.sel.chat])delete SET.mute[SOC.sel.chat];else SET.mute[SOC.sel.chat]=1;saveSet();toast(SET.mute[SOC.sel.chat]?'🔕 Stumm – keine Pop-ups mehr, die Zahl siehst du trotzdem':'🔔 Pop-ups wieder an');socRender();return}
   if(a==='openref'){const m=SOC.msgs.find(x=>x.id===+id);if(!m||!m.ref)return;const r=m.ref,l=LV.find(x=>x.key===r.tool),href=refLink(r);let body='';

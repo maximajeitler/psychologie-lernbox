@@ -586,3 +586,14 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 
 .sava{position:relative;flex:none;display:inline-flex}.sonl{position:absolute;right:-1px;bottom:-1px;width:12px;height:12px;border-radius:50%;background:#22C55E;border:2px solid var(--paper)}
 .sn small.onl{color:#16A34A;font-weight:600}
+.grchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.grchips>button,.grchip button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px;font:600 .82rem var(--body);color:var(--ink);cursor:pointer}
+.grchips>button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.grchip{display:inline-flex;border-radius:999px}
+.grchip button[data-s=gtool]{border-radius:999px 0 0 999px;border-right:0;border-left:4px solid var(--a)}
+.grchip button[data-s=gtool][aria-pressed=true]{background:var(--a);color:#fff;border-color:var(--a)}
+.grchip .grx{border-radius:0 999px 999px 0;padding:6px 9px;color:var(--muted);font-size:.72rem}
+.grchip .grx:hover{color:var(--ink)}
+.grmore{background:none!important;border:0!important;color:var(--muted)!important;text-decoration:underline}
+.srank li.hid{opacity:.6}
+.grtog{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:.88rem;color:var(--muted);cursor:pointer}
