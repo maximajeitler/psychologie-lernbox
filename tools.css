@@ -18,3 +18,4 @@
 /* Quiz: Knöpfe „Fragen“/„Fehler melden“ nicht unter dem Lern-Haustier */
 .stage:has(.petmini) .qrepwrap{margin-right:108px}
 @media (max-width:560px){.stage:has(.petmini) .qrepwrap{margin-right:96px}}
+.chap-head{flex-direction:column;align-items:flex-start;justify-content:flex-start}
