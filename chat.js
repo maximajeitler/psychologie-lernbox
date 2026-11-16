@@ -22,7 +22,7 @@ async function ask(ref){close();const bg=document.createElement('div');bg.classN
     d.querySelector('.sx').onclick=close;d.querySelector('#askl').onclick=()=>{close();window.acOpen&&window.acOpen()};return}
   d.innerHTML=`<button class="sx" aria-label="Schließen">×</button><h3>💬 Fragen</h3><div class="askref"><small>${ref.type==='q'?'Quizfrage':'Lernzettel'} · ${e3(name)}</small>${e3(ref.text)}</div><p>Wird geladen …</p>`;d.querySelector('.sx').onclick=close;
   const [f,g]=await Promise.all([window.acApi.rpc('my_friends'),window.acApi.rpc('my_groups')]);
-  const T=[...(g.data||[]).map(x=>({chat:'g:'+x.id,n:'👥 '+x.name})),...(f.data||[]).filter(x=>x.status==='accepted').map(x=>({chat:x.chat,n:x.nickname}))];
+  const T=[...(g.data||[]).map(x=>({chat:'g:'+x.id,n:(x.icon||'👥')+' '+x.name})),...(f.data||[]).filter(x=>x.status==='accepted').map(x=>({chat:x.chat,n:x.nickname}))];
   if(!T.length){d.querySelector('p').innerHTML='Du hast noch keine Freund:innen oder Gruppen. <a href="../gruppen.html">Jetzt vernetzen →</a>';return}
   let sel=T[0].chat;
   d.innerHTML=`<button class="sx" aria-label="Schließen">×</button><h3>💬 Fragen</h3><div class="askref"><small>${ref.type==='q'?'Quizfrage':'Lernzettel'} · ${e3(name)}</small>${e3(ref.text)}</div>
