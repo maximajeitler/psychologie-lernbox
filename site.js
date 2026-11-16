@@ -464,7 +464,8 @@ function lvStatus(l){const r=X[l.key]||{};return r.res}
 function renderFolderTiles(){const el=document.getElementById('folders');if(!el)return;
   const tot=LV.filter(l=>l.m!=='U').length, done=LV.filter(l=>l.m!=='U'&&lvPassed(l)).length,sb=document.getElementById('studbar');
   if(sb)sb.innerHTML=`<span>${done} von ${tot} Lehrveranstaltungen bestanden</span><span class="bar"><i style="width:${Math.round(100*done/tot)}%"></i></span>`;
-  el.innerHTML=FOLDERS.filter(f=>f.lv.some(needTool)).map(f=>{const LVS=f.lv.filter(needTool),tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
+  const ORD=['entwicklung','sozial','taetigkeit','geschichte','statistik','biologisch','allgemein','differentiell','klinisch','paedagogisch','arbeit','diagnostik'],oi=f=>{const i=ORD.indexOf(f.id);return i<0?99:i};
+  el.innerHTML=FOLDERS.filter(f=>f.lv.some(needTool)).sort((a,b)=>oi(a)-oi(b)).map(f=>{const LVS=f.lv.filter(needTool),tools=f.lv.filter(l=>l.url).length,ok=f.lv.filter(l=>lvStatus(l)==='ok').length;
     const nx=f.lv.map(l=>({l,d:examOf(l)})).filter(x=>x.d&&daysTo(x.d)>=0).sort((a,b)=>D(a.d)-D(b.d))[0];
     return `<a class="folder" href="fach.html?f=${f.id}" style="--a:${f.a};--h:${f.h}"><span class="fc">${LVS.length} ${LVS.length===1?'Lehrveranstaltung':'Lehrveranstaltungen'}</span><span class="fn">${f.n}</span><span class="fx">${tools?`<span class="tl">${tools} Lerntool${tools>1?'s':''}</span>`:'<span>noch kein Lerntool</span>'}${nx?`<span>Prüfung ${dtxt(daysTo(nx.d))}</span>`:''}${ok?`<span>✓ ${ok} bestanden</span>`:''}</span></a>`}).join('');
 }
