@@ -604,3 +604,21 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 .smsg2.me{align-self:flex-end}
 .sbub{min-width:0;max-width:100%}
 .stext{white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* Chat: kompakter Kopf, schmälere Blasen, Suche */
+#socmain .shead{margin:0;align-items:center;justify-content:flex-start;padding:10px 14px;gap:10px}
+#socmain .shead .ib{padding:5px 9px}
+.stabs{padding:8px 14px;gap:6px;overflow-x:auto;scrollbar-width:none}
+.stabs button{padding:5px 12px;font-size:.86rem;white-space:nowrap}
+.smsgs{padding:14px;gap:6px}
+.smsg2{max-width:min(60%,480px)}
+@media (max-width:640px){.smsg2{max-width:82%}}
+.sbub{padding:7px 11px;gap:2px;font-size:.94rem;line-height:1.38}
+.smeta{font-size:.68rem;align-self:flex-end}
+.sfind{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--paper)}
+.sfind[hidden]{display:none}
+.sfind input{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font:inherit;font-size:.9rem;background:var(--bg);color:var(--ink)}
+#sfn{font-size:.78rem;color:var(--muted);white-space:nowrap;min-width:4.5em;text-align:right}
+.smsgs.sfon .smsg2:not(.hit){opacity:.35}
+.smsg2.cur .sbub{box-shadow:0 0 0 2px var(--ink)}
+.stext mark{background:#FFE45C;color:inherit;border-radius:3px;padding:0 1px}
