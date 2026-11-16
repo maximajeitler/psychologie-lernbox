@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#0A1428">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611161909">
-<link rel="icon" type="image/png" href="../favicon-32.png?v=2611161909">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611162027">
+<link rel="icon" type="image/png" href="../favicon-32.png?v=2611162027">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1903,7 +1903,7 @@ function bkMerge(d){
   const ik=P(d.known)||{}; card.known={...ik,...card.known}; LS.set('known',card.known);
   const ih=P(d.simhist)||[], lh=LS.get('simhist',[]); LS.set('simhist',[...lh,...ih.filter(x=>!lh.some(y=>y.d===x.d))].sort((a,b)=>a.d-b.d).slice(-20));
   const ip=P(d.pet);
-  if(ip&&typeof pet!=='undefined'){const lp=pet; if(!lp||!lp.sp||(ip.sp&&((ip.stars||0)+(ip.snacks||0))>((lp.stars||0)+(lp.snacks||0)))){pet=ip;LS.set('pet',ip)}}
+  if(ip&&typeof pet!=='undefined'){const lp=pet; if(!lp||!lp.sp||(ip.sp&&((ip.t||lp.t)?(ip.t||0)>(lp.t||0):((ip.stars||0)+(ip.snacks||0))>((lp.stars||0)+(lp.snacks||0))))){pet=ip;LS.set('pet',ip);if(typeof petHeader==='function')petHeader()}}
   /* Lernplan: bei leerem Plan übernehmen, sonst zusammenführen (Erledigtes, Tage, eigene Aufgaben) */
   const ipl=P(d.plan);
   if(ipl&&typeof plan!=='undefined'){
@@ -2455,7 +2455,7 @@ function bgSVG(id,cls=''){const f=BGN[id];if(!f)return '';const u='bgx'+(++bgUid
 /* ================== Lern-Haustier · Logik ================== */
 /* pet = null (noch nicht entschieden) | {on, sp, name, goal, snacks (Futter gefuttert), stars (⭐ = Geld), owned:[], born, log:{datum:{a,r}}, eq:{head,eyes,neck}, sty:{}, best, sim, seen:[], qhide, gday:{d,s}, hi:{}} */
 let pet = LS.get('pet', null);
-const savePet = ()=>LS.set('pet', pet);
+const savePet = ()=>{if(pet)pet.t=Date.now();LS.set('pet', pet)};
 const petOn = ()=>!!(pet&&pet.on&&pet.sp&&SP[pet.sp]);
 const petTabVisible = ()=>!(pet&&pet.on===false);
 let petUI = {slot:'head', picking:false, pickSp:null, pickGoal:20, buy:null, game:null};
@@ -2600,7 +2600,7 @@ function renderPet(){
      <div class="pfield"><span>Tagesziel (Fragen pro Tag)</span><div class="pstep"><button class="btn ghost" data-petact="goal" data-d="-5" aria-label="weniger">−</button><input type="number" id="pgoalset" min="1" max="200" inputmode="numeric" value="${pet.goal}" aria-label="Fragen pro Tag"><button class="btn ghost" data-petact="goal" data-d="5" aria-label="mehr">+</button></div></div></div>
      <label class="btoggle"><input type="checkbox" data-petact="qtoggle" ${pet.qhide?'':'checked'}> ${esc(pet.name)} im Quiz anzeigen</label>
      <div class="actions"><button class="btn ghost" data-petact="change">Anderes Tier aussuchen</button><button class="btn ghost" data-petact="off">Haustier ausschalten</button></div>
-     <p class="hint">Gespeichert nur in diesem Browser. Beim Ausschalten bleibt alles erhalten.</p>
+     <p class="hint">Mit Account automatisch gespeichert. Beim Ausschalten bleibt alles erhalten.</p>
    </div>
    </div><div class="pcol">
    <div class="panel pcloset">
@@ -2636,7 +2636,7 @@ function petHelp(){const n=esc(pet.name),g=pet.goal;return `<details class="fhel
    <li><b>Sterne ⭐</b> = Geld für den Shop: 1 pro richtige Antwort, 2 bei Altfragen und Prüfungsfragen, 10 Bonus für eine bestandene Simulation. In den Lernspielen gibt’s ⭐ für jeden Treffer, Futter fangen ist nur zum Spaß.</li>
    <li><b>Shop:</b> Gekaufte Teile behältst du für immer und kannst sie gratis umfärben. 🏆-Teile kann man nicht kaufen, nur verdienen.</li>
    <li><b>Streak 🔥:</b> zählt die Tage hintereinander mit geschafftem Tagesziel.</li>
-   <li>Alles ist nur in diesem Browser gespeichert.</li>
+   <li>Mit Account wird dein Haustier automatisch gespeichert – auf jedem Gerät. Ohne Account bleibt es in diesem Browser.</li>
   </ul></details>`}
 function renderPicker(v){
   const sel=petUI.pickSp||(pet&&pet.sp)||null, S=sel&&SP[sel];
@@ -3250,11 +3250,11 @@ renderRail(); renderChapter(); renderCards();
 show(LS.get('tab','learn'));
 </script>
 
-<link rel="stylesheet" href="../tools.css?v=2611161909">
-<script src="../wlog.js?v=2611161909"></script>
-<script src="../account.js?v=2611161909"></script>
-<script src="../pdf.js?v=2611161909"></script>
-<script src="../report.js?v=2611161909"></script>
-<script src="../chat.js?v=2611161909"></script>
-<script src="../app.js?v=2611161909"></script>
+<link rel="stylesheet" href="../tools.css?v=2611162027">
+<script src="../wlog.js?v=2611162027"></script>
+<script src="../account.js?v=2611162027"></script>
+<script src="../pdf.js?v=2611162027"></script>
+<script src="../report.js?v=2611162027"></script>
+<script src="../chat.js?v=2611162027"></script>
+<script src="../app.js?v=2611162027"></script>
 </html>
