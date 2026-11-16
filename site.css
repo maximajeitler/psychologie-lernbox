@@ -600,3 +600,7 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 
 .gmem{display:grid;gap:6px;margin-top:8px}.gmem .srow2{padding:8px 10px;border-radius:12px;background:var(--bg)}
 .gmt{color:var(--muted);font-size:.8rem;white-space:nowrap}
+.smsg2{align-self:flex-start;width:fit-content;min-width:0}
+.smsg2.me{align-self:flex-end}
+.sbub{min-width:0;max-width:100%}
+.stext{white-space:pre-wrap;overflow-wrap:anywhere}
