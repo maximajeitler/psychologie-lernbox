@@ -123,6 +123,9 @@ window.acApi={saveProfile,
   async saveWrapStats(sem,stats){if(!sb||!user)return{error:'login'};const {error}=await sb.from('wrap_stats').upsert({user_id:user.id,sem,stats,updated_at:new Date().toISOString()});return error?{error:error.message}:{ok:true}},
   async allProgress(){if(!sb||!user)return null;const {data,error}=await sb.from('progress').select('tool,data,answered,score').eq('user_id',user.id);return error?null:data},
   async rpc(fn,args){if(!sb||!user)return{error:'login'};const {data,error}=await sb.rpc(fn,args||{});if(error){const m=error.message||'';return{error:/blocked/.test(m)?BADMSG:/code/.test(m)?'Diesen Code gibt es nicht.':/voll/.test(m)?'Die Gruppe ist schon voll (max. 50).':/zu viele/.test(m)?'Du bist schon in 10 Gruppen.':/check|name/.test(m)?'Der Name braucht 2 bis 40 Zeichen.':'Fehler: '+m}}return{data}}};
+/* Online-Status: solange die Seite sichtbar ist, jede Minute „bin da“ melden */
+let seenT=0;function touchSeen(){if(!sb||!user||user.id==='pend'||document.visibilityState!=='visible')return;const n=Date.now();if(n-seenT<45000)return;seenT=n;sb.rpc('touch_seen').then(()=>{},()=>{})}
+setInterval(touchSeen,60000);setTimeout(touchSeen,2500);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){seenT=0;touchSeen()}});
 async function ensureProfile(nick){const {data}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();if(data){profile=data;if(nick&&!data.nickname){const r=await sb.from('profiles').update({nickname:nick}).eq('id',user.id);if(!r.error)profile.nickname=nick}}else{let row={id:user.id,nickname:nick||null,show_on_board:false,show_general:false};let r=await sb.from('profiles').insert(row);if(r.error&&nick){row={...row,nickname:null};await sb.from('profiles').insert(row)}profile=row}setBtn()}
 
 /* ---------- Speichern: Lerntools (CFG.key) und Startseite (lernbox.*) ---------- */

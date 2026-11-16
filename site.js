@@ -592,6 +592,7 @@ function renderSettings(){const el=document.getElementById('settings');if(!el)re
     <div class="srow"><div class="t"><b>Spitzname</b><small>So siehst du in den Ranglisten aus. Deine E-Mail sieht niemand.</small></div><input type="text" id="sNick" maxlength="24" value="${esc(p.nickname||'')}" ${u?'':'disabled'} placeholder="z. B. Lernmonster"></div>
     <div class="srow"><div class="t"><b>Allgemeine Rangliste</b><small>Wer am meisten lernt – gezählt werden alle beantworteten Fragen in allen Fächern.</small></div>${sw('sGen',p.show_general,!u)}</div>
     <div class="srow"><div class="t"><b>Fach-Ranglisten</b><small>Pro Fach: wie viel Prozent der Fragen du zuletzt richtig hattest.</small></div>${sw('sFach',p.show_on_board,!u)}</div>
+    <div class="srow"><div class="t"><b>Online-Status zeigen</b><small>Deine Freund:innen sehen einen grünen Punkt, wenn du gerade in der Lernbox bist, sonst „zuletzt online vor …“.</small></div>${sw('sOnl',p.show_online!==false,!u)}</div>
     <p class="saved" id="sRank" aria-live="polite"></p>
   </div>
   <div class="panel"><p class="label">Prüfungskalender</p><h2>Lernen & Termine</h2>
@@ -626,6 +627,7 @@ document.addEventListener('input',e=>{const id=e.target.id;
 document.addEventListener('change',e=>{const id=e.target.id;
   if(id==='sNick'){clearTimeout(nickT);saveRank({nickname:e.target.value})}
   if(id==='sGen')saveRank({show_general:e.target.checked});
+  if(id==='sOnl'&&window.acApi){const on=e.target.checked;window.acApi.rpc('set_show_online',{p_on:on}).then(r=>{if(r.error){flash('sRank','Hat nicht geklappt – probier es nochmal.',true);e.target.checked=!on}else{const st=window.acState();if(st.profile)st.profile.show_online=on;flash('sRank','✓ Automatisch gespeichert')}})}
   if(id==='sNotif'){SET.notifOff=!e.target.checked;saveSet();flash('sHome','✓ Gespeichert')}
   if(id==='sOeh'){SET.oehOff=!e.target.checked;saveSet();renderAll()}
   if(id==='sFach')saveRank({show_on_board:e.target.checked});
@@ -745,6 +747,8 @@ function renderFerien(){const el=document.getElementById('ferien');if(!el)return
   el.innerHTML=nx.length?'🏖 '+nx.map(x=>`<b>${esc(x.n)}</b> ${k>=x.a?'jetzt bis '+f(x.b||x.a):f(x.a)+(x.b?' – '+f(x.b):'')}`).join(' · '):''}
 function renderAll(){renderExams();renderFolderTiles();renderFach();renderTip();renderSettings();renderNoten();renderWrapBan();renderFerien();renderOeh();renderWeg()}
 renderAll();loadWeather();renderRanks();renderGroups();
+function seenTxt(f){if(!f)return'';if(f.online)return'online';if(!f.seen)return'';const m=Math.round((Date.now()-new Date(f.seen))/6e4);
+  return m<60?`zuletzt online vor ${Math.max(2,m)} Min.`:m<1440?`zuletzt online vor ${Math.round(m/60)} Std.`:m<2880?'zuletzt online gestern':`zuletzt online vor ${Math.round(m/1440)} Tagen`}
 const GICONS=['👥','📚','🧠','🦊','🐨','🐼','🦉','🐸','🦄','🐙','🌸','🌈','⭐','🔥','☕','🍕','🍩','🎧','🎓','📝','💡','🚀','🏆','💜','🍀','🌙','🎉','🧸'];
 
 /* ================== Freunde & Gruppen (Chat) ================== */
@@ -782,7 +786,7 @@ function socDraw(noMain){const side=document.getElementById('socside');if(!side)
   side.innerHTML=`<div class="sbox"><p class="label">Dein Freundescode</p><div class="scode"><b>${esc(SOC.code)}</b><button class="ib" data-s="copyf" data-l="${esc(link)}">🔗 Link kopieren</button></div>
      <div class="sadd"><input id="sfc" maxlength="6" placeholder="Code von Freund:in" autocomplete="off"><button class="btn g" data-s="addf">Hinzufügen</button></div><p class="smsg" id="sfmsg"></p></div>
     ${inc.length?`<div class="sbox"><p class="label">Anfragen</p>${inc.map(f=>`<div class="srow2">${avHTML(f.avatar)}<span class="sn">${esc(f.nickname)}</span><button class="ib on" data-s="acc" data-i="${f.id}">Annehmen</button><button class="ib" data-s="rem" data-i="${f.id}">✕</button></div>`).join('')}</div>`:''}
-    <div class="sbox"><p class="label">Freunde</p>${fr.length?fr.map(f=>`<button class="sitem${SOC.sel&&SOC.sel.chat===f.chat?' on':''}" data-s="openf" data-i="${f.id}">${avHTML(f.avatar)}<span class="sn">${esc(f.nickname)}</span>${muted(f.chat)?'<span class="smute" title="Stumm">🔕</span>':''}${f.unread?`<i class="sbadge">${f.unread}</i>`:''}</button>`).join(''):'<p class="sm">Noch keine Freunde – schick deinen Code oder Link her! 🙂</p>'}
+    <div class="sbox"><p class="label">Freunde</p>${fr.length?fr.map(f=>`<button class="sitem${SOC.sel&&SOC.sel.chat===f.chat?' on':''}" data-s="openf" data-i="${f.id}"><span class="sava">${avHTML(f.avatar)}${f.online?'<i class="sonl" title="online"></i>':''}</span><span class="sn">${esc(f.nickname)}${seenTxt(f)?`<small class="${f.online?'onl':''}">${seenTxt(f)}</small>`:''}</span>${muted(f.chat)?'<span class="smute" title="Stumm">🔕</span>':''}${f.unread?`<i class="sbadge">${f.unread}</i>`:''}</button>`).join(''):'<p class="sm">Noch keine Freunde – schick deinen Code oder Link her! 🙂</p>'}
       ${out.map(f=>`<div class="srow2 dim">${avHTML(f.avatar)}<span class="sn">${esc(f.nickname)}</span><small>wartet …</small><button class="ib" data-s="rem" data-i="${f.id}" title="Anfrage zurückziehen">✕</button></div>`).join('')}</div>
     <div class="sbox"><p class="label">Gruppen</p>${SOC.groups.map(g=>`<button class="sitem${SOC.sel&&SOC.sel.gid===g.id?' on':''}" data-s="openg" data-i="${g.id}"><span class="sav sg">${esc(g.icon||'👥')}</span><span class="sn">${esc(g.name)}<small>${g.members} Mitglied${g.members===1?'':'er'}</small></span>${muted('g:'+g.id)?'<span class="smute" title="Stumm">🔕</span>':''}${SOC.gun[g.id]?`<i class="sbadge">${SOC.gun[g.id]}</i>`:''}</button>`).join('')||'<p class="sm">Noch keine Gruppe.</p>'}
       <div class="sadd"><input id="sgn" maxlength="40" placeholder="Name der neuen Gruppe"><button class="btn g" data-s="newg">Erstellen</button></div>
@@ -794,7 +798,7 @@ function socMain(){const main=document.getElementById('socmain');if(!main)return
   const g=s.gid?SOC.groups.find(x=>x.id===s.gid):null,f=s.fid?SOC.friends.find(x=>x.id===s.fid):null;
   const head=g?`<div class="shead"><button class="sav sg sgi" data-s="gicon" title="Gruppenbild ändern" aria-label="Gruppenbild ändern">${esc(g.icon||'👥')}</button><div><b>${esc(g.name)}</b><small>Code <b>${esc(g.code)}</b> · ${g.members} Mitglieder</small></div><span class="sgap"></span><button class="ib" data-s="mute">${muted(s.chat)?'🔕 Stumm':'🔔 Ton an'}</button><button class="ib" data-s="copyg" data-l="${esc(location.origin+location.pathname.replace(/[^/]*$/,'')+'gruppen.html?gruppe='+g.code)}">🔗 Einladen</button><button class="ib" data-s="leaveg">Verlassen</button></div><div class="gpick" id="gpick" hidden><p class="sm">Such ein Gruppenbild aus – alle in der Gruppe sehen es.</p><div class="gpg">${GICONS.map(x=>`<button data-s="gset" data-e="${x}" aria-pressed="${(g.icon||'👥')===x}">${x}</button>`).join('')}</div></div>
     <div class="stabs">${[['chat','💬 Chat'],['rang','🏆 Rangliste'],['wrap','✨ Wrapped']].map(([k,n])=>`<button data-s="tab" data-t="${k}" aria-pressed="${SOC.tab===k}">${n}</button>`).join('')}</div>`
-    :f?`<div class="shead">${avHTML(f.avatar)}<div><b>${esc(f.nickname)}</b><small>Privater Chat</small></div><span class="sgap"></span><button class="ib" data-s="mute">${muted(s.chat)?'🔕 Stumm':'🔔 Ton an'}</button><button class="ib" data-s="rem" data-i="${f.id}">Entfernen</button><button class="ib" data-s="block" data-i="${f.id}">Blockieren</button></div>`:'';
+    :f?`<div class="shead"><span class="sava">${avHTML(f.avatar)}${f.online?'<i class="sonl"></i>':''}</span><div><b>${esc(f.nickname)}</b><small>${seenTxt(f)||'Privater Chat'}</small></div><span class="sgap"></span><button class="ib" data-s="mute">${muted(s.chat)?'🔕 Stumm':'🔔 Ton an'}</button><button class="ib" data-s="rem" data-i="${f.id}">Entfernen</button><button class="ib" data-s="block" data-i="${f.id}">Blockieren</button></div>`:'';
   if(g&&SOC.tab==='rang'){main.innerHTML=head+'<div class="sbody" id="srang"><p class="sm">Wird geladen …</p></div>';groupRang(g.id);return}
   if(g&&SOC.tab==='wrap'){const w=wrapState(),k=w.open?w.open.key:w.past[0]&&w.past[0].key;main.innerHTML=head+`<div class="sbody sempty"><div class="sbig">✨</div><h2>Gruppen-Wrapped</h2><p>${k?'Euer Semester als Gruppe – jede Person bekommt einen Award.':'Kommt in den Semesterferien! Bis dahin: ansehen, wie es ausschaut.'}</p><a class="btn" href="wrapped.html?gruppe=${k?g.id+'&s='+k:'demo&demo'}">${k?'Ansehen':'Demo ansehen'}</a></div>`;return}
   main.innerHTML=head+`<div class="smsgs" id="smsgs"><p class="sm">Wird geladen …</p></div>
