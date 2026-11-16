@@ -597,3 +597,6 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 .grmore{background:none!important;border:0!important;color:var(--muted)!important;text-decoration:underline}
 .srank li.hid{opacity:.6}
 .grtog{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:.88rem;color:var(--muted);cursor:pointer}
+
+.gmem{display:grid;gap:6px;margin-top:8px}.gmem .srow2{padding:8px 10px;border-radius:12px;background:var(--bg)}
+.gmt{color:var(--muted);font-size:.8rem;white-space:nowrap}
