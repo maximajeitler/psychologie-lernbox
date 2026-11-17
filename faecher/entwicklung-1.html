@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#0A1428">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611162032">
-<link rel="icon" type="image/png" href="../favicon-32.png?v=2611162032">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611170128">
+<link rel="icon" type="image/png" href="../favicon-32.png?v=2611170128">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -102,7 +102,7 @@ mark .hit{box-shadow:0 0 0 2px var(--find,#FFB547),0 0 0 3px var(--ink)}
 .rail button[aria-current="true"]{background:var(--paper);box-shadow:inset 3px 0 0 var(--accent)}
 .rail button[aria-current="true"] .mono{color:var(--accent)}
 .rail button:hover{background:var(--paper)}
-.chap-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:14px}
+.chap-head{display:flex;flex-direction:column;align-items:flex-start;gap:12px;margin-bottom:14px}
 .chap-head h2{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,4vw,2.3rem);line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance}
 .chap-head .mono{color:var(--accent);display:block;margin-bottom:6px}
 .btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:10px;padding:10px 16px;font-weight:600}
@@ -2931,6 +2931,7 @@ function bgSVG(id,cls=''){const f=BGN[id];if(!f)return '';const u='bgx'+(++bgUid
 /* pet = null (noch nicht entschieden) | {on, sp, name, goal, snacks (Futter gefuttert), stars (⭐ = Geld), owned:[], born, log:{datum:{a,r}}, eq:{head,eyes,neck}, sty:{}, best, sim, seen:[], qhide, gday:{d,s}, hi:{}} */
 let pet = LS.get('pet', null);
 const savePet = ()=>{if(pet)pet.t=Date.now();LS.set('pet', pet)};
+window.lbPetStar=()=>{if(!pet||!pet.on||!pet.sp)return false;pet.stars=(pet.stars||0)+1;savePet();if(typeof petHeader==='function')petHeader();return true};
 const petOn = ()=>!!(pet&&pet.on&&pet.sp&&SP[pet.sp]);
 const petTabVisible = ()=>!(pet&&pet.on===false);
 let petUI = {slot:'head', picking:false, pickSp:null, pickGoal:20, buy:null, game:null};
@@ -2990,10 +2991,14 @@ function petCheck(){
   if(neu.length) setTimeout(()=>petToast(`Verdient: <b>${neu.map(a=>a.n).join(', ')}</b>! Gibt’s nicht zu kaufen – im Tab Haustier anziehen.`,'happy'),900);
 }
 /* Hooks aus dem Quiz */
+const SPRUCH=['Nicht schlimm! Sogar Freud hat sich manchmal geirrt. Ziemlich oft eigentlich.','Kleiner Freudscher Versprecher – passiert den Besten.','Pawlows Hund hat auch ein paar Versuche gebraucht. 🔔','Fehler sind Lernchancen, sagt Skinner. Und ich sag: Snack-Chance! 🍪','Piaget würde sagen: Du bist gerade mitten in der Akkommodation.','Das war kognitive Dissonanz in Echtzeit. Geht vorbei!','Ebbinghaus hat’s auch nicht beim ersten Mal gekonnt. Wiederholung macht’s.','Kurz verwirrt? Willkommen in der Psychologie. 🙃','Fun Fact: Fehler merkt sich das Gehirn besonders gut. Also eigentlich ein Gewinn!','Selbst Wundt hat mal klein angefangen. Mit einem Labor und viel Geduld.','Kein Stress – Yerkes und Dodson sagen, ein bissl Spannung hilft sogar.','Das nennt man Lernkurve. Und die geht gleich wieder rauf. 📈','Ich hätte das auch geraten. Ich bin aber auch ein Tier.','Maslow sagt: zuerst Snacks, dann Selbstverwirklichung. Kurze Pause?','Das war nur ein Test, ob ich aufpasse. Hab ich! 👀','Fehler gemacht, Erfahrung gesammelt – Bandura wäre stolz aufs Beobachten.','Die Antwort war gut versteckt. Sogar das Unbewusste hat sie nicht gefunden.','Atmen, weiterklicken, weiterlernen. Du machst das super.','Das kommt nächstes Mal ganz sicher – Wiederholung wirkt Wunder.','Rorschach hätte da sicher auch was Spannendes reininterpretiert. 🖤'];
+let sprN=0,sprLast=-9;
+function petSpruch(){if(pet.nosp)return;sprN++;if(sprN-sprLast<4||Math.random()>.32)return;sprLast=sprN;petToast(esc(pick(SPRUCH)),'happy')}
 function petAnswer(ok,q){
   if(!petOn()) return; const g0=pday(dshift(0)).a>=pet.goal;
   const l=tlog(); l.a++; let st=0; if(ok){l.r++;pet.snacks++;st=starVal(q);pet.stars+=st}
   savePet(); petReact(ok?'yay':'oops',st); petCheck(); petHeader();
+  if(!ok) petSpruch();
   if(!g0&&l.a>=pet.goal) petToast(`Tagesziel geschafft! ${esc(pet.name)} ist pappsatt.`,'happy');
 }
 function petOverride(q){if(!petOn())return;tlog().r++;pet.snacks++;const st=starVal(q);pet.stars+=st;savePet();petReact('yay',st);petCheck();petHeader()}
@@ -3074,6 +3079,7 @@ function renderPet(){
      <div class="psetrow"><label class="pfield"><span>Name</span><input id="pname" maxlength="18" value="${esc(pet.name)}"></label>
      <div class="pfield"><span>Tagesziel (Fragen pro Tag)</span><div class="pstep"><button class="btn ghost" data-petact="goal" data-d="-5" aria-label="weniger">−</button><input type="number" id="pgoalset" min="1" max="200" inputmode="numeric" value="${pet.goal}" aria-label="Fragen pro Tag"><button class="btn ghost" data-petact="goal" data-d="5" aria-label="mehr">+</button></div></div></div>
      <label class="btoggle"><input type="checkbox" data-petact="qtoggle" ${pet.qhide?'':'checked'}> ${esc(pet.name)} im Quiz anzeigen</label>
+     <label class="btoggle"><input type="checkbox" data-petact="sptoggle" ${pet.nosp?'':'checked'}> Lustige Psycho-Sprüche bei Fehlern</label>
      <div class="actions"><button class="btn ghost" data-petact="change">Anderes Tier aussuchen</button><button class="btn ghost" data-petact="off">Haustier ausschalten</button></div>
      <p class="hint">Mit Account automatisch gespeichert. Beim Ausschalten bleibt alles erhalten.</p>
    </div>
@@ -3328,6 +3334,7 @@ document.addEventListener('click',e=>{
     return}
   if(act==='cancel'){petUI.picking=false;petUI.pickSp=null;renderPet();return}
   if(!petOn()) return;
+  if(act==='sptoggle'){pet.nosp=!b.checked;savePet();return}
   if(act==='qhide'){pet.qhide=true;savePet();document.getElementById('petmini')?.remove();petToast(`${esc(pet.name)} ist im Quiz ausgeblendet. Wieder einblenden: Tab Haustier → Einstellungen.`,'content');return}
   if(act==='qtoggle'){pet.qhide=!b.checked;savePet();return}
   if(act==='pat'){const svg=b.querySelector('svg.pet');svg.outerHTML=petSVG({sp:pet.sp,mood:'yay',eq:petEq(),cls:'hop'});document.getElementById('psay').textContent=pick(['Hihi, das kitzelt!','Danke! ♥','Noch eine Runde Quiz?','Ich mag dich.',petLine()]);
@@ -3725,11 +3732,11 @@ renderRail(); renderChapter(); renderCards();
 show(LS.get('tab','learn'));
 </script>
 
-<link rel="stylesheet" href="../tools.css?v=2611162032">
-<script src="../wlog.js?v=2611162032"></script>
-<script src="../account.js?v=2611162032"></script>
-<script src="../pdf.js?v=2611162032"></script>
-<script src="../report.js?v=2611162032"></script>
-<script src="../chat.js?v=2611162032"></script>
-<script src="../app.js?v=2611162032"></script>
+<link rel="stylesheet" href="../tools.css?v=2611170128">
+<script src="../wlog.js?v=2611170128"></script>
+<script src="../account.js?v=2611170128"></script>
+<script src="../pdf.js?v=2611170128"></script>
+<script src="../report.js?v=2611170128"></script>
+<script src="../chat.js?v=2611170128"></script>
+<script src="../app.js?v=2611170128"></script>
 </html>
