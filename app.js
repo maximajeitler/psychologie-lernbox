@@ -99,7 +99,7 @@ function pop(m){if(!wrap){wrap=document.createElement('div');wrap.className='ntf
   const who=m.gname?`${m.nickname} · ${m.gname}`:m.nickname;
   const av=m.avatar&&m.avatar.sp&&window.petSVG?window.petSVG({sp:m.avatar.sp,mood:'content'}):(m.gname?'👥':'💬');
   b.innerHTML=`<span class="na">${av}</span><span><b></b><span class="nt"></span></span><button class="nx" aria-label="Schließen">×</button>`;
-  b.querySelector('b').textContent='💬 '+who;b.querySelector('.nt').textContent=m.body;
+  b.querySelector('b').textContent='💬 '+who;b.querySelector('.nt').textContent=window.stkPreview?window.stkPreview(m.body):m.body;
   b.onclick=e=>{if(e.target.closest('.nx')){b.remove();return}if(window.socOpenChat&&document.getElementById('socmain')){window.socOpenChat(m.chat);b.remove();return}location.href=B2+'gruppen.html?chat='+encodeURIComponent(m.chat)};
   wrap.appendChild(b);setTimeout(()=>b.remove(),9000)}
 async function check(){const st=window.acState&&window.acState();if(!st||!st.user||!window.acApi||document.hidden)return;
@@ -113,3 +113,6 @@ async function check(){const st=window.acState&&window.acState();if(!st||!st.use
   if(window.socRender&&document.getElementById('socside'))window.socRender(true)}
 setTimeout(check,4000);setInterval(check,15000);
 })();
+
+/* Ostereier nachladen */
+(function(){try{const c=document.currentScript;const src=(c&&c.src||'').replace('/app.js','/eggs.js');if(src){const s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)}}catch(e){}})();
