@@ -24,7 +24,7 @@ const FOLDERS=[
    {c:'H.a',n:'Seminar Forschungsmethodik in einem Grundlagen- oder Anwendungsfach',t:'SE',m:'H'},
    {c:'H.b',n:'Tutorium zum Seminar Forschungsmethodik',t:'TU',m:'H'}]},
  {id:'biologisch',n:'Biologische Psychologie',a:'#1F6B3A',h:'#FFC9A0',lv:[
-   {c:'A.1.d',n:'Biologische Psychologie I',t:'VO',m:'A1',key:'bio'},
+   {c:'A.1.d',n:'Biologische Psychologie I',t:'VO',m:'A1',key:'bio',url:'faecher/biologisch-1.html'},
    {c:'D.1.b',n:'Biologische Psychologie II',t:'VO',m:'D1'},
    {c:'D.2.b',n:'Spezielle Kapitel der Biologischen Psychologie',t:'VO/SE',m:'D2'}]},
  {id:'allgemein',n:'Allgemeine Psychologie',a:'#A3123A',h:'#FFE45C',lv:[
