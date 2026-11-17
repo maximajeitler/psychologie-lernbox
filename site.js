@@ -803,14 +803,14 @@ function socMain(){const main=document.getElementById('socmain');if(!main)return
   if(g&&SOC.tab==='rang'){main.innerHTML=head+'<div class="sbody" id="srang"><p class="sm">Wird geladen …</p></div>';groupRang(g.id);return}
   if(g&&SOC.tab==='wrap'){const w=wrapState(),k=w.open?w.open.key:w.past[0]&&w.past[0].key;main.innerHTML=head+`<div class="sbody sempty"><div class="sbig">✨</div><h2>Gruppen-Wrapped</h2><p>${k?'Euer Semester als Gruppe – jede Person bekommt einen Award.':'Kommt in den Semesterferien! Bis dahin: ansehen, wie es ausschaut.'}</p><a class="btn" href="wrapped.html?gruppe=${k?g.id+'&s='+k:'demo&demo'}">${k?'Ansehen':'Demo ansehen'}</a></div>`;return}
   main.innerHTML=head+`<div class="sfind" id="sfind" ${SOC.find?'':'hidden'}><input id="sfq" placeholder="Im Chat suchen …" autocomplete="off" value="${esc(SOC.fq||'')}"><span id="sfn"></span><button class="ib" data-s="sfprev" aria-label="Vorheriger Treffer">↑</button><button class="ib" data-s="sfnext" aria-label="Nächster Treffer">↓</button><button class="ib" data-s="sfclose" aria-label="Suche schließen">✕</button></div><div class="smsgs" id="smsgs"><p class="sm">Wird geladen …</p></div>
-    <div class="scomp">${SOC.reply?`<div class="sreply">↩ Antwort auf: ${esc((SOC.msgs.find(m=>m.id===SOC.reply)||{}).body||'').slice(0,80)}<button class="ib" data-s="noreply">✕</button></div>`:''}<textarea id="stxt" rows="1" maxlength="2000" placeholder="Nachricht schreiben …"></textarea><button class="btn" data-s="send">Senden</button></div>`;
+    <div class="scomp">${SOC.reply?`<div class="sreply">↩ Antwort auf: ${esc((SOC.msgs.find(m=>m.id===SOC.reply)||{}).body||'').slice(0,80)}<button class="ib" data-s="noreply">✕</button></div>`:''}<button class="stkbtn" data-s="stk" title="Sticker" aria-label="Sticker">${window.petSVG?window.petSVG({sp:mySp(),mood:'wink'}):'🦊'}</button><textarea id="stxt" rows="1" maxlength="2000" placeholder="Nachricht schreiben …"></textarea><button class="btn" data-s="send">Senden</button></div>`;
   const fq=main.querySelector('#sfq');fq.addEventListener('input',()=>{SOC.fq=fq.value;SOC.fi=-1;findApply(true)});fq.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findStep(e.shiftKey?-1:1)}if(e.key==='Escape')findClose()});
   const ta=main.querySelector('#stxt');ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();socSend()}});
   ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(140,ta.scrollHeight)+'px'});
   SOC.msgs=[];SOC.last=0;socPull(true)}
 function msgHTML(m,isG){if(m.deleted)return `<div class="smsg2 ${m.is_me?'me':''}"><div class="sbub del">Nachricht gelöscht</div></div>`;
   const rp=m.reply_to?SOC.msgs.find(x=>x.id===m.reply_to):null;
-  return `<div class="smsg2 ${m.is_me?'me':''}" data-id="${m.id}">${!m.is_me&&isG?avHTML(m.avatar,'sm'):''}<div class="sbub">${!m.is_me&&isG?`<span class="sfrom">${esc(m.nickname)}</span>`:''}${rp?`<span class="squote">↩ ${esc((rp.body||'').slice(0,70))}</span>`:''}${refCard(m.ref,m.id)}<span class="stext">${esc(m.body)}</span>
+  return `<div class="smsg2 ${m.is_me?'me':''}${stkOf(m.body)?' isstk':''}" data-id="${m.id}">${!m.is_me&&isG?avHTML(m.avatar,'sm'):''}<div class="sbub">${!m.is_me&&isG?`<span class="sfrom">${esc(m.nickname)}</span>`:''}${rp?`<span class="squote">↩ ${esc(window.stkPreview(rp.body||'').slice(0,70))}</span>`:''}${refCard(m.ref,m.id)}${stkOf(m.body)?stkHTML(stkOf(m.body),m.avatar&&m.avatar.sp):`<span class="stext">${esc(m.body)}</span>`}
     <span class="smeta">${m.ref&&m.solved?'<b class="ssolved">✓ gelöst</b> · ':''}${tShort(m.created_at)}</span>
     <span class="sacts"><button data-s="rep" data-i="${m.id}">Antworten</button>${m.is_me&&m.ref?`<button data-s="solv" data-i="${m.id}">${m.solved?'Doch offen':'✓ Gelöst'}</button>`:''}${m.is_me?`<button data-s="del" data-i="${m.id}">Löschen</button>`:`<button data-s="rept" data-i="${m.id}">Melden</button>`}</span></div></div>`}
 async function socPull(scroll){const s=SOC.sel;if(!s||SOC.tab!=='chat'||SOC.busy)return;SOC.busy=true;
@@ -838,6 +838,21 @@ function findApply(jump){const box=document.getElementById('smsgs');if(!box)retu
 function findShow(){const id=SOC.hits[SOC.fi];const el=document.querySelector(`.smsg2[data-id="${id}"]`);document.querySelectorAll('.smsg2.cur').forEach(x=>x.classList.remove('cur'));if(el){el.classList.add('cur');el.scrollIntoView({block:'center',behavior:'smooth'})}const n=document.getElementById('sfn');if(n)n.textContent=`${SOC.fi+1} / ${SOC.hits.length}`}
 function findStep(d){const h=SOC.hits||[];if(!h.length)return;SOC.fi=((SOC.fi<0?h.length:SOC.fi)+d+h.length)%h.length;findShow()}
 function findClose(){SOC.find=false;SOC.fq='';const f=document.getElementById('sfind');if(f)f.hidden=true;findApply(false)}
+/* ================== Sticker (immer mit dem Tier der Person, die ihn schickt) ================== */
+const STK=[
+ ['lern',[['konditioniert','hungry','Klassisch konditioniert 🔔'],['voll','dizzy','Arbeitsgedächtnis: voll'],['karten','sleepy','7 ± 2 Karteikarten später …'],['kurve','star','Lernkurve: steil 📈'],['aufschub','smug','Prokrastination, aber mit Stil'],['wirklich','focus','Ich lerne. Wirklich.']]],
+ ['pruef',[['yerkes','wink','Ein bissl Stress ist gut (Yerkes-Dodson)'],['angst','shock','Prüfungsangst? Ich?'],['bestanden','party','BESTANDEN!!!'],['blackout','dizzy','Blackout 🌀'],['gewusst','smug','Hab’s gewusst (glaub ich)'],['altfrage','star','Altfrage erkannt 👀']]],
+ ['psycho',[['dissonanz','dizzy','Kognitive Dissonanz'],['bestaetig','smug','Bestätigungsfehler: ich hatte eh recht'],['verdraengt','sleepy','Verdrängt.'],['projektion','wink','Projektion! Du bist müde, nicht ich'],['versprecher','oops','Freudscher Versprecher'],['halo','love','Halo-Effekt ✨']]],
+ ['gruppe',[['gruppe','happy','Lerngruppe > alles'],['gerührt','cry','Ihr seid so gut 🥹'],['kaffee','sleepy','Brauch Kaffee ☕'],['engel','love','Danke, du Engel'],['bib','wink','Wer kommt in die Bib?'],['nacht','sleepy','Gute Nacht 🌙']]],
+];
+const STKN={lern:'Lernen',pruef:'Prüfung',psycho:'Psycho',gruppe:'Gruppe'};
+const STKI=Object.fromEntries(STK.flatMap(([,l])=>l.map(x=>[x[0],x])));
+const stkOf=b=>{const m=/^::stk:([a-z]+)::$/.exec(b||'');return m&&STKI[m[1]]?STKI[m[1]]:null};
+const mySp=()=>{const st=window.acState?window.acState():{};const a=st.profile&&st.profile.avatar;return a&&a.sp||'fox'};
+function stkHTML(x,sp){return `<span class="sstk"><span class="sstkp">${window.petSVG?window.petSVG({sp:sp||'fox',mood:x[1]}):''}</span><span class="sstkt">${esc(x[2])}</span></span>`}
+function stkPanel(){const sp=mySp();return `<div class="stkpan" id="stkpan"><div class="stktabs">${STK.map(([k],i)=>`<button data-s="stktab" data-k="${k}" aria-pressed="${(SOC.stab||'lern')===k}">${STKN[k]}</button>`).join('')}</div><div class="stkgrid">${(STK.find(([k])=>k===(SOC.stab||'lern'))||STK[0])[1].map(x=>`<button data-s="stksend" data-k="${x[0]}" title="${esc(x[2])}">${stkHTML(x,sp)}</button>`).join('')}</div></div>`}
+async function stkSend(k){if(!SOC.sel)return;const r=await rpc('send_msg',{p_chat:SOC.sel.chat,p_body:'::stk:'+k+'::',p_ref:null,p_reply:SOC.reply});if(r.error){toast(/slow/.test(r.error)?'Langsam – kurz durchatmen 🙂':r.error);return}SOC.reply=null;SOC.stk=false;const p=document.getElementById('stkpan');if(p)p.remove();socPull(true)}
+window.stkPreview=b=>{const x=stkOf(b);return x?'🦊 Sticker: '+x[2]:b};
 const GTOOLS=()=>LV.filter(l=>l.key&&l.url).map(l=>({k:l.key,n:l.n,a:l.f.a}));
 async function groupRang(gid){const el=document.getElementById('srang');if(!el)return;
   const hid=(SET.grHide||[]),tools=GTOOLS(),vis=tools.filter(t=>!hid.includes(t.k));if(SOC.gtool&&!vis.some(t=>t.k===SOC.gtool))SOC.gtool=null;
@@ -864,6 +879,9 @@ document.addEventListener('click',async e=>{const b=e.target.closest('[data-s]')
   if(a==='leaveg'){if(!b.dataset.sure){b.dataset.sure=1;b.textContent='Wirklich verlassen?';return}await rpc('leave_group',{p_group:SOC.sel.gid});SOC.sel=null;socRender();return}
   if(a==='gicon'){const p=document.getElementById('gpick');if(p)p.hidden=!p.hidden;return}
   if(a==='gset'){const e2=b.dataset.e,gid=SOC.sel&&SOC.sel.gid;if(!gid)return;const r=await rpc('set_group_icon',{p_group:gid,p_icon:e2});if(r.error){toast('Hat nicht geklappt – probier es nochmal.');return}const gg=SOC.groups.find(x=>x.id===gid);if(gg)gg.icon=e2;socDraw();toast(e2+' Neues Gruppenbild!');return}
+  if(a==='stk'){const p=document.getElementById('stkpan');if(p){p.remove();SOC.stk=false;return}SOC.stk=true;const c=document.querySelector('.scomp');if(c)c.insertAdjacentHTML('beforebegin',stkPanel());return}
+  if(a==='stktab'){SOC.stab=b.dataset.k;const p=document.getElementById('stkpan');if(p)p.outerHTML=stkPanel();return}
+  if(a==='stksend'){stkSend(b.dataset.k);return}
   if(a==='sfind'){if(SOC.tab!=='chat'&&SOC.sel&&SOC.sel.gid){SOC.tab='chat';socMain()}SOC.find=!SOC.find;const f=document.getElementById('sfind');if(f){f.hidden=!SOC.find;if(SOC.find)document.getElementById('sfq').focus();else findClose()}return}
   if(a==='sfnext'){findStep(1);return}
   if(a==='sfprev'){findStep(-1);return}
