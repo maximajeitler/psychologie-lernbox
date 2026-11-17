@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#0A1428">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611171837">
-<link rel="icon" type="image/png" href="../favicon-32.png?v=2611171837">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611180032">
+<link rel="icon" type="image/png" href="../favicon-32.png?v=2611180032">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1510,7 +1510,7 @@ function renderChapter(){
   document.getElementById('chapter').innerHTML = `<div class="chap-head"><div><span class="mono">Kapitel ${c.id}${(()=>{const k=c.sec.reduce((a,s)=>a+s.b.filter(x=>x&&x.neu).length,0);return k?` · <span style="color:var(--accent)">${k} neu</span>`:''})()}</span><h2>${esc(c.t)}</h2></div><div class="actions" style="margin:0">${(()=>{const ev=Q.filter(q=>q.c===c.id&&isOpen(q.id)).length;return ev?`<button class="btn" id="chw">${ev} Fehler aus K${c.id} wiederholen</button>`:''})()}<button class="btn accent" id="chq">${n} Fragen zu K${c.id} üben</button></div></div>`+
    (c.sec.some(s=>s.b.some(x=>x&&x.vid))?`<p class="vidnote"><span class="vidbar"></span>Zeilen mit einem Strich links stammen aus den <b>Videos</b> zu diesem Kapitel.</p>`:'')+
    c.sec.map(s=>`<article class="sec"><h3>${esc(s.h)}</h3><ul>${s.b.map(renderItem).join('')}</ul></article>`).join('');
-  document.getElementById('chq').onclick=()=>{setup.ch=[c.id];setup.filter='all';setup.n=20;show('quiz');startQuiz()};
+  document.getElementById('chq').onclick=()=>{setup.ch=[c.id];setup.filter='all';setup.type='all';setup.n=0;show('quiz');startQuiz()};
   const chw=document.getElementById('chw'); if(chw) chw.onclick=()=>{setup.ch=[c.id];setup.filter='ever';setup.n=0;show('quiz');startQuiz()};
 }
 
@@ -3336,11 +3336,11 @@ renderRail(); renderChapter(); renderCards();
 show(LS.get('tab','learn'));
 </script>
 
-<link rel="stylesheet" href="../tools.css?v=2611171837">
-<script src="../wlog.js?v=2611171837"></script>
-<script src="../account.js?v=2611171837"></script>
-<script src="../pdf.js?v=2611171837"></script>
-<script src="../report.js?v=2611171837"></script>
-<script src="../chat.js?v=2611171837"></script>
-<script src="../app.js?v=2611171837"></script>
+<link rel="stylesheet" href="../tools.css?v=2611180032">
+<script src="../wlog.js?v=2611180032"></script>
+<script src="../account.js?v=2611180032"></script>
+<script src="../pdf.js?v=2611180032"></script>
+<script src="../report.js?v=2611180032"></script>
+<script src="../chat.js?v=2611180032"></script>
+<script src="../app.js?v=2611180032"></script>
 </html>
