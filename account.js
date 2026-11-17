@@ -13,7 +13,7 @@ const curU=()=>user||(authDone?null:pend), curP=()=>profile||(!user&&curU()?prof
 function profSave(){try{if(user&&profile)localStorage.setItem('lernbox.profile',JSON.stringify({id:user.id,nickname:profile.nickname||null,avatar:profile.avatar||null,show_on_board:!!profile.show_on_board,show_general:!!profile.show_general}));else localStorage.removeItem('lernbox.profile')}catch(e){}}
 const $=s=>document.querySelector(s);
 /* ---------- Profilbild (Lern-Tier) ---------- */
-const AV_MOODS=[['content','Ruhig'],['yay','Fröhlich'],['oops','Hoppla']];
+const AV_MOODS=[['content','Ruhig'],['yay','Fröhlich'],['oops','Hoppla'],['star','Begeistert'],['love','Verliebt'],['wink','Zwinkert'],['party','Feiert'],['cry','Freudentränen'],['smug','Selbstsicher'],['focus','Konzentriert'],['shock','Geschockt'],['dizzy','Schwindlig'],['sleepy','Müde']];
 function avLocal(){try{return JSON.parse(localStorage.getItem('lernbox.avatar')||'null')}catch(e){return null}}
 function avatarHTML(a,size,cls){size=size||32;const f=window.petSVG;if(!a||!a.sp||typeof f!=='function')return '';
   const m=AV_MOODS.some(x=>x[0]===a.m)?a.m:'content';
