@@ -803,10 +803,10 @@ function socMain(){const main=document.getElementById('socmain');if(!main)return
   if(g&&SOC.tab==='rang'){main.innerHTML=head+'<div class="sbody" id="srang"><p class="sm">Wird geladen …</p></div>';groupRang(g.id);return}
   if(g&&SOC.tab==='wrap'){const w=wrapState(),k=w.open?w.open.key:w.past[0]&&w.past[0].key;main.innerHTML=head+`<div class="sbody sempty"><div class="sbig">✨</div><h2>Gruppen-Wrapped</h2><p>${k?'Euer Semester als Gruppe – jede Person bekommt einen Award.':'Kommt in den Semesterferien! Bis dahin: ansehen, wie es ausschaut.'}</p><a class="btn" href="wrapped.html?gruppe=${k?g.id+'&s='+k:'demo&demo'}">${k?'Ansehen':'Demo ansehen'}</a></div>`;return}
   main.innerHTML=head+`<div class="sfind" id="sfind" ${SOC.find?'':'hidden'}><input id="sfq" placeholder="Im Chat suchen …" autocomplete="off" value="${esc(SOC.fq||'')}"><span id="sfn"></span><button class="ib" data-s="sfprev" aria-label="Vorheriger Treffer">↑</button><button class="ib" data-s="sfnext" aria-label="Nächster Treffer">↓</button><button class="ib" data-s="sfclose" aria-label="Suche schließen">✕</button></div><div class="smsgs" id="smsgs"><p class="sm">Wird geladen …</p></div>
-    <div class="scomp">${SOC.reply?`<div class="sreply">↩ Antwort auf: ${esc((SOC.msgs.find(m=>m.id===SOC.reply)||{}).body||'').slice(0,80)}<button class="ib" data-s="noreply">✕</button></div>`:''}<button class="stkbtn" data-s="stk" title="Sticker" aria-label="Sticker">${window.petSVG?window.petSVG({sp:mySp(),mood:'wink'}):'🦊'}</button><textarea id="stxt" rows="1" maxlength="2000" placeholder="Nachricht schreiben …"></textarea><button class="btn" data-s="send">Senden</button></div>`;
+    <div class="styping" id="styping" hidden></div><div class="scomp">${SOC.reply?`<div class="sreply">↩ Antwort auf: ${esc((SOC.msgs.find(m=>m.id===SOC.reply)||{}).body||'').slice(0,80)}<button class="ib" data-s="noreply">✕</button></div>`:''}<button class="stkbtn" data-s="stk" title="Sticker" aria-label="Sticker">${window.petSVG?window.petSVG({sp:mySp(),mood:'wink'}):'🦊'}</button><textarea id="stxt" rows="1" maxlength="2000" placeholder="Nachricht schreiben …"></textarea><button class="btn" data-s="send">Senden</button></div>`;
   const fq=main.querySelector('#sfq');fq.addEventListener('input',()=>{SOC.fq=fq.value;SOC.fi=-1;findApply(true)});fq.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();findStep(e.shiftKey?-1:1)}if(e.key==='Escape')findClose()});
   const ta=main.querySelector('#stxt');ta.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();socSend()}});
-  ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(140,ta.scrollHeight)+'px'});
+  ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(140,ta.scrollHeight)+'px';tySend()});
   SOC.msgs=[];SOC.last=0;socPull(true)}
 function msgHTML(m,isG){if(m.deleted)return `<div class="smsg2 ${m.is_me?'me':''}"><div class="sbub del">Nachricht gelöscht</div></div>`;
   const rp=m.reply_to?SOC.msgs.find(x=>x.id===m.reply_to):null;
@@ -824,7 +824,7 @@ async function socPull(scroll){const s=SOC.sel;if(!s||SOC.tab!=='chat'||SOC.busy
   finally{SOC.busy=false}}
 async function socSend(){const ta=document.getElementById('stxt');if(!ta)return;const t=ta.value.trim();if(!t)return;
   if(window.lbNameOk&&!window.lbNameOk(t)){toast('Bitte ohne Kraftausdrücke 🙂');return}
-  ta.disabled=true;const r=await rpc('send_msg',{p_chat:SOC.sel.chat,p_body:t,p_ref:null,p_reply:SOC.reply});ta.disabled=false;
+  ta.disabled=true;tyStop();const r=await rpc('send_msg',{p_chat:SOC.sel.chat,p_body:t,p_ref:null,p_reply:SOC.reply});ta.disabled=false;
   if(r.error){toast(/slow/.test(r.error)?'Langsam – kurz durchatmen 🙂':r.error);return}ta.value='';ta.style.height='';SOC.reply=null;const q=document.querySelector('.sreply');if(q)q.remove();ta.focus();socPull(true)}
 async function groupMem(gid){const r=await rpc('group_people',{p_group:gid});const el=document.getElementById('smem');if(!el)return;const d=r.data||[];
   const act=x=>x.rel==='me'?'<small class="gmt">du</small>':x.rel==='friend'?`<button class="ib" data-s="openf" data-i="${x.id}">💬 Chat</button>`:x.rel==='sent'?'<small class="gmt">Anfrage gesendet</small>':x.rel==='incoming'?`<button class="ib on" data-s="acc" data-i="${x.id}">Annehmen</button>`:x.rel==='blocked'?'<small class="gmt">blockiert</small>':`<button class="ib" data-s="gfr" data-i="${x.id}">＋ Freund:in</button>`;
@@ -852,7 +852,7 @@ const mySp=()=>{const st=window.acState?window.acState():{};const a=st.profile&&
 function stkHTML(x,sp){return `<span class="sstk"><span class="sstkp">${window.petSVG?window.petSVG({sp:sp||'fox',mood:x[1]}):''}</span><span class="sstkt">${esc(x[2])}</span></span>`}
 function stkPanel(){const sp=mySp();return `<div class="stkpan" id="stkpan"><div class="stktabs">${STK.map(([k],i)=>`<button data-s="stktab" data-k="${k}" aria-pressed="${(SOC.stab||'lern')===k}">${STKN[k]}</button>`).join('')}</div><div class="stkgrid">${(STK.find(([k])=>k===(SOC.stab||'lern'))||STK[0])[1].map(x=>`<button data-s="stksend" data-k="${x[0]}" title="${esc(x[2])}">${stkHTML(x,sp)}</button>`).join('')}</div></div>`}
 async function stkSend(k){if(!SOC.sel)return;const r=await rpc('send_msg',{p_chat:SOC.sel.chat,p_body:'::stk:'+k+'::',p_ref:null,p_reply:SOC.reply});if(r.error){toast(/slow/.test(r.error)?'Langsam – kurz durchatmen 🙂':r.error);return}SOC.reply=null;SOC.stk=false;const p=document.getElementById('stkpan');if(p)p.remove();socPull(true)}
-window.stkPreview=b=>{const x=stkOf(b);return x?'🦊 Sticker: '+x[2]:b};
+window.stkPreview=b=>{const x=stkOf(b);return x?'hat einen Sticker geschickt':b};
 const GTOOLS=()=>LV.filter(l=>l.key&&l.url).map(l=>({k:l.key,n:l.n,a:l.f.a}));
 async function groupRang(gid){const el=document.getElementById('srang');if(!el)return;
   const hid=(SET.grHide||[]),tools=GTOOLS(),vis=tools.filter(t=>!hid.includes(t.k));if(SOC.gtool&&!vis.some(t=>t.k===SOC.gtool))SOC.gtool=null;
@@ -917,3 +917,16 @@ function socTick(){const st=window.acState?window.acState():{};const uid=(st.use
 setInterval(()=>{socTick();if(document.hidden)return;if(document.getElementById('socside')&&SOC.sel)socPull();},6000);
 setInterval(()=>{if(document.hidden)return;const st=window.acState?window.acState():{};if(st.user){const sd=document.getElementById('socside');if(sd){if(!sd.contains(document.activeElement))socRender(true)}else socLoad().then(navBadge)}},45000);
 socCached()&&navBadge();socTick();{let n=0;const iv=setInterval(()=>{socTick();if(++n>60)clearInterval(iv)},250)}
+
+/* ---------- „… schreibt“ (live, ohne Speicherung) ---------- */
+const TY={ch:null,chat:null,who:{},last:0};
+function tySync(){const c=SOC.sel&&SOC.tab==='chat'&&document.getElementById('stxt')?SOC.sel.chat:null;if(c===TY.chat)return;
+  if(TY.ch){try{TY.ch.leave()}catch(e){}TY.ch=null}TY.chat=c;TY.who={};
+  if(c&&window.acApi&&window.acApi.typing)TY.ch=window.acApi.typing(c,p=>{if(p.stop)delete TY.who[p.u];else TY.who[p.u]={n:p.n,at:Date.now()};tyShow()})}
+function tySend(){const ta=document.getElementById('stxt');if(!TY.ch||!ta||!ta.value.trim())return;const n=Date.now();if(n-TY.last<2000)return;TY.last=n;TY.ch.send(false)}
+function tyStop(){if(TY.ch){TY.last=0;TY.ch.send(true)}}
+function tyShow(){const el=document.getElementById('styping');if(!el)return;const now=Date.now();
+  for(const k in TY.who)if(now-TY.who[k].at>5000)delete TY.who[k];
+  const ns=Object.values(TY.who).map(x=>x.n);el.hidden=!ns.length;
+  if(ns.length)el.innerHTML=`<span class="tdots"><i></i><i></i><i></i></span><span>${esc(ns.slice(0,3).join(', '))}${ns.length>3?' u. a.':''} ${ns.length>1?'schreiben':'schreibt'} …</span>`}
+setInterval(()=>{tySync();tyShow()},800);

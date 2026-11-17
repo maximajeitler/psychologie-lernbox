@@ -641,3 +641,15 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 .stkgrid button{border:0;background:none;border-radius:14px;padding:4px;cursor:pointer;transition:transform .15s,background .15s}
 .stkgrid button:hover{background:var(--bg);transform:scale(1.04)}
 .stkgrid .sstk{width:100%;padding:0 6px;box-sizing:border-box}.stkgrid .sstkp{width:84px;height:84px}.stkgrid .sstkt{font-size:.62rem;max-width:108px;width:fit-content;padding:4px 8px}
+
+/* Chat im Fenster über einem Lerntool */
+.embed .topbar,.embed .pagehead,.embed footer,.embed #socside{display:none!important}
+.embed body{background:var(--paper,#fff)}
+.embed section{padding:0!important}.embed section>.wrap{max-width:none;padding:0}
+.embed .soc{display:block}.embed #socmain{border:0;border-radius:0;min-height:100vh;max-height:100vh;box-shadow:none}
+/* „… schreibt“ */
+.styping{display:flex;align-items:center;gap:8px;padding:4px 16px 6px;font-size:.8rem;color:var(--muted)}
+.styping[hidden]{display:none}
+.tdots{display:inline-flex;gap:3px}.tdots i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;animation:tdot 1.1s infinite}
+.tdots i:nth-child(2){animation-delay:.18s}.tdots i:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{opacity:.25;transform:none}30%{opacity:1;transform:translateY(-3px)}}

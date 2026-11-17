@@ -92,6 +92,14 @@ const css=document.createElement('style');css.textContent=`
 .ntf{display:flex;gap:10px;align-items:flex-start;background:#0A1428;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.3);font:500 .9rem/1.35 'Instrument Sans',system-ui,sans-serif;cursor:pointer;animation:ntfin .35s cubic-bezier(.2,.9,.3,1.2) both;text-align:left;border:0}
 .ntf:hover{background:#13213D}.ntf b{display:block;font-size:.82rem;color:#72CEF2}.ntf .nx{margin-left:auto;background:none;border:0;color:#9DAFCC;font-size:1.1rem;cursor:pointer;padding:0 0 0 6px}
 .ntf .na{width:34px;height:34px;border-radius:50%;background:#D6F1FA;display:grid;place-items:center;overflow:hidden;flex:none;--hl:#D6F1FA}.ntf .na svg{width:125%;height:auto;margin-top:6px}
+
+.lbov{position:fixed;inset:0;z-index:200}.lbov-bg{position:absolute;inset:0;background:rgba(10,20,40,.45)}
+.lbov-p{position:absolute;top:0;right:0;bottom:0;width:min(560px,100vw);background:#fff;display:flex;flex-direction:column;box-shadow:-20px 0 50px rgba(0,0,0,.25);animation:lbovin .28s cubic-bezier(.2,.9,.3,1) both}
+.lbov-h{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#0A1428;color:#C9D5EA;font:500 .78rem/1.3 'Instrument Sans',system-ui,sans-serif}
+.lbov-back{border:0;background:#fff;color:#0A1428;border-radius:999px;padding:8px 14px;font:700 .88rem 'Instrument Sans',system-ui,sans-serif;cursor:pointer;flex:none}
+.lbov-h span{flex:1;min-width:0}.lbov-full{color:#C9D5EA;text-decoration:none;font-size:1.1rem;padding:4px 6px}
+.lbov iframe{flex:1;border:0;width:100%;background:#fff}
+@keyframes lbovin{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 @keyframes ntfin{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}`;document.head.appendChild(css);
 let wrap=null;
 function pop(m){if(!wrap){wrap=document.createElement('div');wrap.className='ntf-wrap';document.body.appendChild(wrap)}
@@ -99,10 +107,17 @@ function pop(m){if(!wrap){wrap=document.createElement('div');wrap.className='ntf
   const who=m.gname?`${m.nickname} · ${m.gname}`:m.nickname;
   const av=m.avatar&&m.avatar.sp&&window.petSVG?window.petSVG({sp:m.avatar.sp,mood:'content'}):(m.gname?'👥':'💬');
   b.innerHTML=`<span class="na">${av}</span><span><b></b><span class="nt"></span></span><button class="nx" aria-label="Schließen">×</button>`;
-  b.querySelector('b').textContent='💬 '+who;b.querySelector('.nt').textContent=window.stkPreview?window.stkPreview(m.body):m.body;
-  b.onclick=e=>{if(e.target.closest('.nx')){b.remove();return}if(window.socOpenChat&&document.getElementById('socmain')){window.socOpenChat(m.chat);b.remove();return}location.href=B2+'gruppen.html?chat='+encodeURIComponent(m.chat)};
+  b.querySelector('b').textContent='💬 '+who;b.querySelector('.nt').textContent=window.stkPreview?window.stkPreview(m.body):(/^::stk:[^:]+::$/.test(m.body||'')?'hat einen Sticker geschickt':m.body);
+  b.onclick=e=>{if(e.target.closest('.nx')){b.remove();return}if(window.socOpenChat&&document.getElementById('socmain')){window.socOpenChat(m.chat);b.remove();return}b.remove();chatOverlay(m.chat)};
   wrap.appendChild(b);setTimeout(()=>b.remove(),9000)}
-async function check(){const st=window.acState&&window.acState();if(!st||!st.user||!window.acApi||document.hidden)return;
+function chatOverlay(chat){let ov=document.getElementById('lbchatov');if(ov)ov.remove();
+  const tool=typeof Q!=='undefined'&&typeof CFG!=='undefined';
+  ov=document.createElement('div');ov.id='lbchatov';ov.className='lbov';
+  ov.innerHTML=`<div class="lbov-bg"></div><div class="lbov-p" role="dialog" aria-label="Chat"><div class="lbov-h"><button class="lbov-back" type="button">← ${tool?'Zurück zum Lernen':'Schließen'}</button><span>${tool?'Dein Quiz und deine Stelle bleiben genau so, wie sie waren.':''}</span><a class="lbov-full" href="${B2}gruppen.html?chat=${encodeURIComponent(chat)}" title="Ganze Seite öffnen">↗</a></div><iframe src="${B2}gruppen.html?chat=${encodeURIComponent(chat)}&embed=1" title="Chat"></iframe></div>`;
+  document.body.appendChild(ov);const close=()=>{ov.remove();document.removeEventListener('keydown',esc)};const esc=e=>{if(e.key==='Escape')close()};
+  ov.querySelector('.lbov-back').onclick=close;ov.querySelector('.lbov-bg').onclick=close;document.addEventListener('keydown',esc)}
+window.lbChatOverlay=chatOverlay;
+async function check(){if(window.top!==window)return;const st=window.acState&&window.acState();if(!st||!st.user||!window.acApi||document.hidden)return;
   let last=+localStorage.getItem(LK)||0;
   if(!last){const r=await window.acApi.rpc('max_msg_id');if(r&&r.data!=null)localStorage.setItem(LK,String(r.data||1));return}
   const r=await window.acApi.rpc('new_msgs',{p_after:last});const list=(r&&r.data||[]).slice().reverse();if(!list.length)return;

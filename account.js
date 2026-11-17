@@ -116,6 +116,9 @@ async function saveProfile(patch){if(!user)return{error:'login'};
   if(error)return{error:/duplicate|unique/i.test(error.message)?'Diesen Spitznamen gibt es schon – nimm einen anderen.':/blocked/.test(error.message)?BADMSG:'Fehler: '+error.message};
   profile=next;setBtn();if(window.lbRender)window.lbRender();return{ok:true}}
 window.acApi={saveProfile,
+  typing(chat,cb){if(!sb||!user)return null;const me=user.id;const ch=sb.channel('lbt:'+chat,{config:{broadcast:{self:false}}});
+    ch.on('broadcast',{event:'t'},({payload})=>{if(payload&&payload.u!==me)cb(payload)}).subscribe();
+    return{send(stop){const p=curP()||{};ch.send({type:'broadcast',event:'t',payload:{u:me,n:p.nickname||'Jemand',stop:stop?1:0}})},leave(){sb.removeChannel(ch)}}},
   async sendFeedback(row){if(!sb)return{error:'offline'};const {error}=await sb.from('feedback').insert(row);return error?{error:error.message}:{ok:true}},
   async updatePassword(pw){if(!user)return{error:'login'};if(!pw||pw.length<8)return{error:'Mindestens 8 Zeichen.'};const {error}=await sb.auth.updateUser({password:pw});return error?{error:'Fehler: '+error.message}:{ok:true}},
   async logout(){await sb.auth.signOut();user=null;profile=null;msg='';setBtn();if($('.acm'))render();if(window.lbRender)window.lbRender()},
