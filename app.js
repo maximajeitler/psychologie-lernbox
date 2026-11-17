@@ -114,5 +114,3 @@ async function check(){const st=window.acState&&window.acState();if(!st||!st.use
 setTimeout(check,4000);setInterval(check,15000);
 })();
 
-/* Ostereier nachladen */
-(function(){try{const c=document.currentScript;const src=(c&&c.src||'').replace('/app.js','/eggs.js');if(src){const s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)}}catch(e){}})();

@@ -629,7 +629,7 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 .sstk{display:flex;flex-direction:column;align-items:center;gap:0;width:140px}
 .sstkp{width:126px;height:126px;display:block;filter:drop-shadow(0 3px 0 rgba(10,20,40,.08))}.sstkp svg{width:100%;height:100%}
 .sstk .pet path[fill="var(--hl)"]{opacity:.35}
-.sstkt{background:var(--ink);color:var(--paper);font:800 .78rem/1.15 var(--display);letter-spacing:-.01em;text-align:center;padding:5px 9px;border-radius:12px;transform:rotate(-2deg);margin-top:-4px;max-width:140px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.sstkt{display:block;box-sizing:border-box;background:var(--ink);color:var(--paper);font:800 .76rem/1.18 var(--display);letter-spacing:-.01em;text-align:center;text-wrap:balance;hyphens:manual;width:fit-content;padding:5px 10px;border-radius:12px;transform:rotate(-2deg);margin:-4px auto 0;max-width:124px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
 .smsg2.me .sstkt{background:var(--hl);color:var(--hl-ink)}
 .stkbtn{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--paper);padding:2px;cursor:pointer}
 .stkbtn svg{width:100%;height:100%}.stkbtn:hover{border-color:var(--ink)}
@@ -637,7 +637,7 @@ button.sref:hover{border-color:#72CEF2;background:var(--paper)}
 .stktabs{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto}
 .stktabs button{border:0;border-radius:999px;padding:5px 12px;font:600 .82rem var(--body);background:var(--bg);color:var(--ink);cursor:pointer;white-space:nowrap}
 .stktabs button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
-.stkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:4px;max-height:260px;overflow-y:auto;padding-bottom:6px}
+.stkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:6px;max-height:260px;overflow-y:auto;padding-bottom:6px}
 .stkgrid button{border:0;background:none;border-radius:14px;padding:4px;cursor:pointer;transition:transform .15s,background .15s}
 .stkgrid button:hover{background:var(--bg);transform:scale(1.04)}
-.stkgrid .sstk{width:100%}.stkgrid .sstkp{width:86px;height:86px}.stkgrid .sstkt{font-size:.68rem;max-width:100%}
+.stkgrid .sstk{width:100%;padding:0 6px;box-sizing:border-box}.stkgrid .sstkp{width:84px;height:84px}.stkgrid .sstkt{font-size:.62rem;max-width:108px;width:fit-content;padding:4px 8px}

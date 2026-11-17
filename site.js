@@ -840,9 +840,9 @@ function findStep(d){const h=SOC.hits||[];if(!h.length)return;SOC.fi=((SOC.fi<0?
 function findClose(){SOC.find=false;SOC.fq='';const f=document.getElementById('sfind');if(f)f.hidden=true;findApply(false)}
 /* ================== Sticker (immer mit dem Tier der Person, die ihn schickt) ================== */
 const STK=[
- ['lern',[['konditioniert','hungry','Klassisch konditioniert 🔔'],['voll','dizzy','Arbeitsgedächtnis: voll'],['karten','sleepy','7 ± 2 Karteikarten später …'],['kurve','star','Lernkurve: steil 📈'],['aufschub','smug','Prokrastination, aber mit Stil'],['wirklich','focus','Ich lerne. Wirklich.']]],
- ['pruef',[['yerkes','wink','Ein bissl Stress ist gut (Yerkes-Dodson)'],['angst','shock','Prüfungsangst? Ich?'],['bestanden','party','BESTANDEN!!!'],['blackout','dizzy','Blackout 🌀'],['gewusst','smug','Hab’s gewusst (glaub ich)'],['altfrage','star','Altfrage erkannt 👀']]],
- ['psycho',[['dissonanz','dizzy','Kognitive Dissonanz'],['bestaetig','smug','Bestätigungsfehler: ich hatte eh recht'],['verdraengt','sleepy','Verdrängt.'],['projektion','wink','Projektion! Du bist müde, nicht ich'],['versprecher','oops','Freudscher Versprecher'],['halo','love','Halo-Effekt ✨']]],
+ ['lern',[['konditioniert','hungry','Klassisch konditioniert 🔔'],['voll','dizzy','Arbeits\u00ADgedächtnis: voll'],['karten','sleepy','7 ± 2 Karteikarten später …'],['kurve','star','Lernkurve: steil 📈'],['aufschub','smug','Prokrastinieren mit Stil'],['wirklich','focus','Ich lerne. Wirklich.']]],
+ ['pruef',[['yerkes','wink','Bissl Stress hilft (Yerkes-Dodson)'],['angst','shock','Prüfungsangst? Ich?'],['bestanden','party','BESTANDEN!!!'],['blackout','dizzy','Blackout 🌀'],['gewusst','smug','Hab’s gewusst (glaub ich)'],['altfrage','star','Altfrage erkannt 👀']]],
+ ['psycho',[['dissonanz','dizzy','Kognitive Dissonanz'],['bestaetig','smug','Bestätigungs\u00ADfehler: eh recht gehabt'],['verdraengt','sleepy','Verdrängt.'],['projektion','wink','Projektion! Du bist müde, nicht ich'],['versprecher','oops','Freudscher Versprecher'],['halo','love','Halo-Effekt ✨']]],
  ['gruppe',[['gruppe','happy','Lerngruppe > alles'],['gerührt','cry','Ihr seid so gut 🥹'],['kaffee','sleepy','Brauch Kaffee ☕'],['engel','love','Danke, du Engel'],['bib','wink','Wer kommt in die Bib?'],['nacht','sleepy','Gute Nacht 🌙']]],
 ];
 const STKN={lern:'Lernen',pruef:'Prüfung',psycho:'Psycho',gruppe:'Gruppe'};
