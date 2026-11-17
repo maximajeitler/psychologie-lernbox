@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#0A1428">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611171345">
-<link rel="icon" type="image/png" href="../favicon-32.png?v=2611171345">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611171837">
+<link rel="icon" type="image/png" href="../favicon-32.png?v=2611171837">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2963,8 +2963,19 @@ function renderPet(){
      
    </div>
    </div></div>${badgeRow()}`;
+  petBalance(v);
   const gs=document.getElementById('pgoalset'); gs.onchange=()=>{const n=goalVal('pgoalset');if(n){pet.goal=n;savePet();petHeader()}renderPet()};
   const ni=document.getElementById('pname'); ni.onchange=()=>{pet.name=ni.value.trim()||SP[pet.sp].nm;savePet();petHeader();renderPet()};
+}
+function petBalance(v){
+  /* Einstellungen und Spiele so auf die zwei Spalten verteilen, dass beide etwa gleich hoch sind (keine große leere Fläche) */
+  const cols=[...v.querySelectorAll('.pgrid>.pcol')],st=v.querySelector('.pstage'),cl=v.querySelector('.pcloset'),mv=[v.querySelector('.pset'),v.querySelector('.pgames')];
+  if(cols.length!==2||!st||!cl||mv.some(x=>!x)||innerWidth<=820)return;
+  cols.forEach(c=>c.style.alignSelf='start');[st,cl,...mv].forEach(p=>p.style.flex='none');
+  const H=p=>p.offsetHeight+14,hs=H(st),hc=H(cl),hm=mv.map(H);let best=null;
+  for(let m=0;m<4;m++){let a=hs,b=hc;mv.forEach((p,i)=>{if(m>>i&1)b+=hm[i];else a+=hm[i]});const d=Math.abs(a-b);if(!best||d<best.d)best={m,d}}
+  mv.forEach((p,i)=>(best.m>>i&1?cols[1]:cols[0]).appendChild(p));
+  cols.forEach(c=>c.style.alignSelf='');[st,cl,...mv].forEach(p=>p.style.flex='');
 }
 function petNext(){
   const n=esc(pet.name), a=pday(dshift(0)).a, g=pet.goal, half=Math.ceil(g/2), m=petMood();
@@ -3598,11 +3609,11 @@ show(LS.get('tab','learn'));
 </script>
 
 
-<link rel="stylesheet" href="../tools.css?v=2611171345">
-<script src="../wlog.js?v=2611171345"></script>
-<script src="../account.js?v=2611171345"></script>
-<script src="../pdf.js?v=2611171345"></script>
-<script src="../report.js?v=2611171345"></script>
-<script src="../chat.js?v=2611171345"></script>
-<script src="../app.js?v=2611171345"></script>
+<link rel="stylesheet" href="../tools.css?v=2611171837">
+<script src="../wlog.js?v=2611171837"></script>
+<script src="../account.js?v=2611171837"></script>
+<script src="../pdf.js?v=2611171837"></script>
+<script src="../report.js?v=2611171837"></script>
+<script src="../chat.js?v=2611171837"></script>
+<script src="../app.js?v=2611171837"></script>
 </html>
