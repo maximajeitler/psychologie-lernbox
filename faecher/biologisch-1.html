@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="../manifest.webmanifest">
 <meta name="theme-color" content="#0A1428">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611171238">
-<link rel="icon" type="image/png" href="../favicon-32.png?v=2611171238">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=2611171345">
+<link rel="icon" type="image/png" href="../favicon-32.png?v=2611171345">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1681,6 +1681,7 @@ function startQuiz(){
 }
 function record(q,ok){const s=stats[q.id]||{r:0,w:0,rep:0};if(ok){s.r++;s.rep=s.last==='w'?REP:Math.max(0,(s.rep||0)-1)}else{s.w++;s.rep=0}s.last=ok?'r':'w';stats[q.id]=s;saveStats()}
 function renderQ(){
+  if(typeof petToastHide==="function"){const _t=document.getElementById("ptoast");if(_t&&_t.dataset.stay)petToastHide()}
   const v=document.getElementById('v-quiz'); const q=quiz.list[quiz.i]; quiz.answered=false;
   const pct = Math.round(quiz.i/quiz.list.length*100);
   let body='';
@@ -1714,6 +1715,7 @@ function answerTF(v){if(quiz.answered)return;const q=quiz.list[quiz.i];document.
 function answerGap(val){if(quiz.answered)return;const q=quiz.list[quiz.i];const n=norm(val);const ok=!!n&&q.a.some(a=>norm(a)===n);const inp=document.getElementById('gin');inp.disabled=true;inp.classList.add(ok?'ok':'no');document.querySelectorAll('#gf button').forEach(b=>b.disabled=true);feedback(ok,q,(!ok&&n)?'<p><button class="btn ghost" id="override" type="button">Meine Antwort war richtig</button></p>':'')}
 function next(){quiz.i++; if(quiz.i>=quiz.list.length) finish(); else renderQ(); window.scrollTo({top:0})}
 function finish(){
+  if(typeof petToastHide==="function"){const _t=document.getElementById("ptoast");if(_t&&_t.dataset.stay)petToastHide()}
   const v=document.getElementById('v-quiz'); const done=quiz.right+quiz.wrong.length;
   const pct=done?Math.round(quiz.right/done*100):0;
   const wr=quiz.wrong.slice();
@@ -2580,7 +2582,7 @@ function petCheck(){
 /* Hooks aus dem Quiz */
 const SPRUCH=['Nicht schlimm! Sogar Freud hat sich manchmal geirrt. Ziemlich oft eigentlich.','Kleiner Freudscher Versprecher – passiert den Besten.','Pawlows Hund hat auch ein paar Versuche gebraucht. 🔔','Fehler sind Lernchancen, sagt Skinner. Und ich sag: Snack-Chance! 🍪','Piaget würde sagen: Du bist gerade mitten in der Akkommodation.','Das war kognitive Dissonanz in Echtzeit. Geht vorbei!','Ebbinghaus hat’s auch nicht beim ersten Mal gekonnt. Wiederholung macht’s.','Kurz verwirrt? Willkommen in der Psychologie. 🙃','Fun Fact: Fehler merkt sich das Gehirn besonders gut. Also eigentlich ein Gewinn!','Selbst Wundt hat mal klein angefangen. Mit einem Labor und viel Geduld.','Kein Stress – Yerkes und Dodson sagen, ein bissl Spannung hilft sogar.','Das nennt man Lernkurve. Und die geht gleich wieder rauf. 📈','Ich hätte das auch geraten. Ich bin aber auch ein Tier.','Maslow sagt: zuerst Snacks, dann Selbstverwirklichung. Kurze Pause?','Das war nur ein Test, ob ich aufpasse. Hab ich! 👀','Fehler gemacht, Erfahrung gesammelt – Bandura wäre stolz aufs Beobachten.','Die Antwort war gut versteckt. Sogar das Unbewusste hat sie nicht gefunden.','Atmen, weiterklicken, weiterlernen. Du machst das super.','Das kommt nächstes Mal ganz sicher – Wiederholung wirkt Wunder.','Rorschach hätte da sicher auch was Spannendes reininterpretiert. 🖤'];
 let sprN=0,sprLast=-9;
-function petSpruch(){if(pet.nosp)return;sprN++;if(sprN-sprLast<4||Math.random()>.32)return;sprLast=sprN;petToast(esc(pick(SPRUCH)),'happy')}
+function petSpruch(){if(pet.nosp)return;sprN++;if(sprN-sprLast<4||Math.random()>.32)return;sprLast=sprN;petToast(esc(pick(SPRUCH)),'happy',true)}
 function petAnswer(ok,q){
   if(!petOn()) return; const g0=pday(dshift(0)).a>=pet.goal;
   const l=tlog(); l.a++; let st=0; if(ok){l.r++;pet.snacks++;st=starVal(q);pet.stars+=st}
@@ -2625,12 +2627,15 @@ function petHeader(){
   b.innerHTML=`<span>${petSVG({sp:pet.sp,mood:petBaseMood(),eq:petEq(),crop:'22 6 156 156'})}</span>`;
 }
 let petTT=null;
-function petToast(html,m){
+function petToast(html,m,stay){
   if(!petOn()) return; const t=document.getElementById('ptoast');
   t.innerHTML=`<span class="pt-pet">${petSVG({sp:pet.sp,mood:m||'happy',eq:petEq(),crop:'22 6 156 156'})}</span><span>${html}</span>`;
   t.hidden=false; t.classList.remove('in'); void t.offsetWidth; t.classList.add('in');
-  clearTimeout(petTT); petTT=setTimeout(()=>{t.classList.remove('in');setTimeout(()=>t.hidden=true,300)},4200);
+  clearTimeout(petTT); t.dataset.stay=stay?'1':'';
+  if(!stay) petTT=setTimeout(petToastHide,4200);
+  t.onclick=petToastHide;
 }
+function petToastHide(){const t=document.getElementById('ptoast');if(!t||t.hidden)return;clearTimeout(petTT);t.dataset.stay='';t.classList.remove('in');setTimeout(()=>{if(!t.classList.contains('in'))t.hidden=true},300)}
 /* Einladung im Quiz-Tab (nur solange nicht entschieden) */
 function petInvite(){
   if(pet) return '';
@@ -3320,11 +3325,11 @@ renderRail(); renderChapter(); renderCards();
 show(LS.get('tab','learn'));
 </script>
 
-<link rel="stylesheet" href="../tools.css?v=2611171238">
-<script src="../wlog.js?v=2611171238"></script>
-<script src="../account.js?v=2611171238"></script>
-<script src="../pdf.js?v=2611171238"></script>
-<script src="../report.js?v=2611171238"></script>
-<script src="../chat.js?v=2611171238"></script>
-<script src="../app.js?v=2611171238"></script>
+<link rel="stylesheet" href="../tools.css?v=2611171345">
+<script src="../wlog.js?v=2611171345"></script>
+<script src="../account.js?v=2611171345"></script>
+<script src="../pdf.js?v=2611171345"></script>
+<script src="../report.js?v=2611171345"></script>
+<script src="../chat.js?v=2611171345"></script>
+<script src="../app.js?v=2611171345"></script>
 </html>
