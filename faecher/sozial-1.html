@@ -2812,7 +2812,7 @@ const petNQ = ()=>Q.filter(q=>MAIN.has(q.c)||q.c===PQ).length;
 function petScale(){const d=Math.max(1,examDays());const budget=Math.min(d*20,petNQ()*2)*1.05;return Math.max(.25,Math.min(1.5,+(budget/400).toFixed(2)))}
 const petStreakReqCalc = ()=>Math.max(2,Math.min(5,Math.round(Math.max(1,examDays())/2)));
 const petStreakReq = ()=>pet&&pet.streakReq||5;
-const accPr = a=>a.pr==null?null:a.pr===0?0:Math.max(5,Math.round(a.pr*((pet&&pet.scale)||1)/5)*5);
+const accPr = a=>a.pr==null?null:a.pr===0?0:Math.max(5,Math.round(a.pr*1.4*((pet&&pet.scale)||1)/5)*5);
 function petStreak(){let s=0,i=pday(dshift(0)).a>=pet.goal?0:1;for(;i<400;i++){if(pday(dshift(i)).a>=pet.goal)s++;else break}return s}
 function petMood(){
   /* setzt sich jeden Tag zurück: morgens hungrig, ab halbem Tagesziel zufrieden, Ziel geschafft = glücklich; 2+ Tage gar nix gelernt = traurig */
